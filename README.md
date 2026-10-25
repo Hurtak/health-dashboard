@@ -53,3 +53,7 @@ Your original plan calls for **2 rounds in week one**, then 3 thereafter. This a
 Sounds play for the final three seconds and interval changes using Web Audio, enabled by the start button. The timer uses elapsed time rather than counting callbacks. Navigating away pauses the current workout; returning to it preserves progress until the page reloads. The browser’s screen wake lock is used where available. Keep the tab open and the device awake for reliable audio; mobile browsers can suspend background pages. Refreshing resets the session.
 
 The app uses a `100dvh` grid, safe-area padding, and CSS container units to fit the movement ring around the available space. It prevents page overscroll, and long guidance lives in native dialogs. All movement animation uses CSS and respects reduced-motion preferences. Google Fonts is the only external visual request; system font fallbacks work offline. All workout data, diagrams, timers, and audio are local.
+
+## License
+
+[MIT](LICENSE) © 2026 Petr Hurtak.
