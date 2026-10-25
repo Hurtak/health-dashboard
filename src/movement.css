@@ -1,0 +1,164 @@
+.movement {
+  overflow: visible;
+}
+.movement-shadow {
+  fill: #4e6444;
+  opacity: 0.08;
+}
+.movement-ground {
+  stroke: #849376;
+  stroke-width: 1;
+  opacity: 0.22;
+}
+.movement-mat {
+  fill: #dce5d2;
+}
+.figure polyline,
+.figure path {
+  fill: none;
+}
+.figure-leg > polyline {
+  stroke: #30483e;
+  stroke-width: 8.5;
+}
+.figure-arm > polyline {
+  stroke: #cd9c7c;
+  stroke-width: 7;
+}
+.figure-hand,
+.figure-grip {
+  fill: #cd9c7c;
+}
+.figure-far {
+  opacity: 0.65;
+}
+.figure-shoe {
+  stroke: #273e35;
+  stroke-width: 6;
+}
+.figure .figure-neck {
+  stroke: #cd9c7c;
+  stroke-width: 7;
+}
+.figure .figure-shoulders {
+  stroke: #527663;
+  stroke-width: 10;
+}
+.figure .figure-shirt {
+  stroke: #527663;
+  stroke-width: 20;
+  stroke-linecap: butt;
+}
+.figure .figure-shorts {
+  stroke: #30483e;
+  stroke-width: 16;
+}
+.figure-head > circle {
+  fill: #cd9c7c;
+}
+.figure .figure-hair {
+  stroke: #313c32;
+  stroke-width: 5;
+}
+.figure .figure-face {
+  stroke: #4d4839;
+  stroke-width: 1.2;
+}
+.figure .figure-nose {
+  stroke: #cd9c7c;
+  stroke-width: 2;
+  fill: #cd9c7c;
+}
+.figure-bench {
+  stroke: #96a58a;
+  stroke-width: 3;
+}
+.figure-bench .bench-seat {
+  stroke-width: 5;
+}
+.figure .kettlebell-body {
+  fill: #263d34;
+  stroke: #263d34;
+  stroke-width: 1;
+}
+.figure .kettlebell-handle {
+  stroke: #263d34;
+  stroke-width: 2.8;
+}
+.figure .kettlebell-highlight {
+  stroke: #769080;
+  stroke-width: 1.4;
+}
+.movement-cue {
+  stroke: #a58c61;
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+  stroke-linecap: round;
+  fill: none;
+  opacity: 0.7;
+}
+.movement-arrowhead {
+  fill: none;
+  stroke: #a58c61;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.rest-drawing {
+  fill: none;
+  stroke: #718967;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bottle-water {
+  stroke: #9db295;
+  stroke-width: 2;
+}
+
+/* Three distinct poses, with the middle pose repeated on the controlled return. */
+.movement-frame {
+  opacity: 0;
+  animation: pose-cycle 4.8s steps(1, end) infinite;
+  animation-delay: calc(var(--frame) * 1.2s);
+}
+@keyframes pose-cycle {
+  0%,
+  24.99% {
+    opacity: 1;
+  }
+  25%,
+  100% {
+    opacity: 0;
+  }
+}
+.movement--circles .movement-frame {
+  animation-name: circle-cycle;
+  animation-delay: calc(var(--frame) * 1.6s);
+}
+@keyframes circle-cycle {
+  0%,
+  33.32% {
+    opacity: 1;
+  }
+  33.33%,
+  100% {
+    opacity: 0;
+  }
+}
+.is-still .movement-frame {
+  animation-play-state: paused;
+}
+.movement-frame.is-fixed {
+  opacity: 1;
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .movement-frame {
+    animation: none;
+    opacity: 0;
+  }
+  .movement-frame.frame-0 {
+    opacity: 1;
+  }
+}

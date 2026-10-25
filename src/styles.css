@@ -1,0 +1,982 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
+
+:root {
+  font-family: "DM Sans", system-ui, sans-serif;
+  color: #293b31;
+  background: #f6f5f0;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --ink: #293b31;
+  --muted: #6f7c65;
+  --green: #284c3d;
+  --line: #e0e4d7;
+  --lime: #e4edb5;
+  --surface: #edf0e4;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  block-size: 100%;
+}
+html {
+  overscroll-behavior: none;
+}
+body {
+  margin: 0;
+  overscroll-behavior: none;
+}
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #a57b50;
+  outline-offset: 3px;
+}
+button {
+  transition: background-color 0.15s;
+}
+svg {
+  flex-shrink: 0;
+}
+h1,
+h2,
+h3,
+p,
+dl,
+dd {
+  margin: 0;
+}
+h1,
+h2,
+h3 {
+  font-family: "Manrope", system-ui, sans-serif;
+}
+h1 {
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+}
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  font-weight: 600;
+  color: var(--muted);
+}
+.period {
+  color: #8c9e6e;
+}
+.page-description {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.text-button {
+  min-block-size: 44px;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.text-button:hover {
+  background: #e5eadb;
+}
+.primary-button {
+  min-block-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  inline-size: 100%;
+  padding: 12px 20px;
+  border-radius: 28px;
+  background: var(--green);
+  color: #f5f7ed;
+  font-size: 14px;
+}
+.primary-button:hover {
+  background: #365e4b;
+}
+.icon-button {
+  inline-size: 44px;
+  block-size: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  background: #e6ecda;
+  color: #627a4e;
+}
+.icon-button:hover {
+  background: #dce6cc;
+}
+
+/* The shell owns the viewport; only supplementary dialog content scrolls. */
+.app-shell {
+  block-size: 100dvh;
+  max-inline-size: 1280px;
+  margin-inline: auto;
+  padding-block: max(8px, env(safe-area-inset-top))
+    max(8px, env(safe-area-inset-bottom));
+  padding-inline: max(clamp(16px, 4vw, 60px), env(safe-area-inset-left))
+    max(clamp(16px, 4vw, 60px), env(safe-area-inset-right));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: clip;
+}
+.app-shell main {
+  min-block-size: 0;
+  min-inline-size: 0;
+  display: grid;
+}
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 5px 12px;
+  border-block-end: 1px solid var(--line);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  min-block-size: 44px;
+  padding: 0;
+  background: transparent;
+  font:
+    800 28px "Manrope",
+    sans-serif;
+  letter-spacing: -0.06em;
+}
+.brand-mark {
+  inline-size: 32px;
+  block-size: 32px;
+  display: grid;
+  place-items: center;
+  margin-inline-end: 8px;
+  background: var(--green);
+  color: var(--lime);
+  border-radius: 10px;
+}
+.brand-dot {
+  color: #8d9b61;
+}
+.site-header nav {
+  display: flex;
+  gap: 5px;
+}
+.site-header nav button {
+  min-block-size: 44px;
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  border-radius: 8px;
+}
+.site-header nav button.active,
+.site-header nav button:hover {
+  background: #e7ebde;
+  color: var(--green);
+}
+.header-note {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: #879277;
+}
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block-start: 12px;
+  border-block-start: 1px solid var(--line);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: #8d977e;
+}
+.site-footer p {
+  font:
+    italic 12px Georgia,
+    serif;
+  letter-spacing: 0;
+}
+
+.home-page {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  gap: clamp(8px, 1.5dvh, 15px);
+  padding-block: clamp(10px, 2dvh, 20px);
+  min-block-size: 0;
+}
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.hero h1 {
+  font-size: clamp(28px, 5dvh, 44px);
+  margin-block-start: 6px;
+}
+.hero h1 span {
+  color: #7e8e63;
+}
+.hero p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-block-start: 8px;
+}
+.week-strip {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 12px 20px;
+  background: #eeefe6;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.week-label {
+  display: grid;
+  gap: 5px;
+  padding-inline-end: 24px;
+  border-inline-end: 1px solid var(--line);
+}
+.week-label .eyebrow {
+  font-size: 8px;
+}
+.week-label strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.week-days {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  gap: 8px;
+}
+.week-day {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.day-badge {
+  inline-size: 25px;
+  block-size: 25px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #536a3c;
+  background: #dce5c8;
+  font-weight: 600;
+}
+.day-b .day-badge {
+  background: #eadfcf;
+  color: #896e4c;
+}
+.rest-day .day-badge {
+  background: #e2e7d7;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.section-title h2 {
+  font-size: 20px;
+  letter-spacing: -0.04em;
+}
+.section-title > span {
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: #89957a;
+}
+.workout-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  min-block-size: 0;
+}
+.workout-card {
+  min-block-size: 0;
+  min-inline-size: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  padding: 0;
+  background: #fffefa;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-align: start;
+  overflow: clip;
+}
+.workout-card:hover {
+  background: #f8faf1;
+}
+.card-art {
+  container-type: size;
+  overflow: clip;
+  min-block-size: 0;
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: #e4e9d9;
+  isolation: isolate;
+}
+.card-b .card-art {
+  background: #eee3d6;
+}
+.card-art .movement {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  inline-size: min(100cqw, 240px);
+  block-size: 100cqh;
+}
+.art-circle {
+  position: absolute;
+  z-index: -1;
+  inline-size: min(85cqw, 85cqh);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #f4f6ec80;
+}
+.workout-pill {
+  position: absolute;
+  inset: 12px auto auto 14px;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: #66794f;
+}
+.card-b .workout-pill {
+  color: #8f7456;
+}
+.card-body {
+  position: relative;
+  padding: 15px 20px;
+  min-inline-size: 0;
+}
+.card-days {
+  display: block;
+  color: #8d987f;
+  font-size: 8px;
+  letter-spacing: 0.07em;
+  margin-block-end: 5px;
+}
+.card-body h3 {
+  font-size: 21px;
+  letter-spacing: -0.04em;
+  font-weight: 600;
+}
+.card-body p {
+  font-size: 11px;
+  color: var(--muted);
+  margin-block-start: 5px;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 10px;
+  margin-block-start: 10px;
+}
+.card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.card-arrow {
+  position: absolute;
+  inset: 20px 17px auto auto;
+  color: #83946e;
+}
+.food-banner {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 15px 22px;
+  background: #edf0e3;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  text-align: start;
+  min-inline-size: 0;
+}
+.food-banner:hover {
+  background: #e6edd9;
+}
+.food-icon {
+  inline-size: 44px;
+  block-size: 44px;
+  display: grid;
+  place-items: center;
+  background: #e0e8cc;
+  border-radius: 13px;
+  color: #789055;
+}
+.food-banner-copy {
+  display: grid;
+  gap: 4px;
+  min-inline-size: 0;
+}
+.food-banner-copy .eyebrow {
+  font-size: 8px;
+}
+.food-banner-copy strong {
+  font-size: 15px;
+  font-weight: 500;
+}
+.food-banner-copy > span:last-child {
+  font-size: 11px;
+  color: var(--muted);
+}
+.food-banner-target {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  margin-inline-start: auto;
+  white-space: nowrap;
+}
+.food-banner-target strong {
+  font:
+    500 28px "Manrope",
+    sans-serif;
+  letter-spacing: -0.04em;
+}
+.food-banner-target strong span {
+  font-size: 15px;
+  color: #83946d;
+}
+.food-banner-target > span {
+  font-size: 7px;
+  color: #8a9978;
+  letter-spacing: 0.07em;
+}
+.food-banner > svg {
+  color: #879a71;
+}
+
+.food-page {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  padding-block: 22px;
+  max-inline-size: 1000px;
+  inline-size: 100%;
+  margin-inline: auto;
+  min-block-size: 0;
+}
+.food-heading h1 {
+  font-size: clamp(28px, 5dvh, 42px);
+  margin-block: 8px;
+}
+.food-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.2fr);
+  gap: 40px;
+  min-block-size: 0;
+}
+.protein-card {
+  position: relative;
+  border-radius: 12px;
+  background: #e6ebd8;
+  padding: 25px;
+  align-self: center;
+}
+.protein-card .eyebrow {
+  font-size: 9px;
+}
+.protein-target {
+  font:
+    500 clamp(50px, 10dvh, 90px)/1.2 "Manrope",
+    sans-serif;
+  letter-spacing: -0.07em;
+  margin-block: 10px;
+}
+.protein-target span {
+  font-size: 0.4em;
+  color: #8f9f76;
+  margin-inline-start: 5px;
+}
+.protein-card p {
+  color: #6d8058;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.protein-card > svg {
+  position: absolute;
+  inset: 65px 20px auto auto;
+  color: #a1b17f;
+}
+.food-notes {
+  display: grid;
+  grid-template-rows: auto auto repeat(4, minmax(44px, 1fr)) auto;
+  min-block-size: 0;
+}
+.food-notes h2 {
+  font-size: 21px;
+  letter-spacing: -0.04em;
+}
+.food-notes > p {
+  font-size: 11px;
+  color: var(--muted);
+  margin-block: 6px 12px;
+}
+.meal-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-block-size: 44px;
+  border-block-end: 1px solid var(--line);
+  padding-block: 4px;
+}
+.meal-number {
+  font-size: 10px;
+  color: #8a9a76;
+}
+.meal-row h3 {
+  font:
+    500 13px "DM Sans",
+    sans-serif;
+}
+.meal-row p {
+  color: #829273;
+  font-size: 11px;
+  line-height: 1.7;
+  margin-block-start: 4px;
+}
+.meal-row > strong {
+  margin-inline-start: auto;
+  color: #667f50;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.meal-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #718562;
+  font-size: 12px;
+  padding-block-start: 12px;
+}
+.meal-total strong {
+  font-weight: 600;
+}
+.food-help {
+  justify-self: start;
+}
+
+.info-dialog {
+  overflow: auto;
+  inline-size: min(540px, calc(100vw - 24px));
+  max-block-size: calc(
+    100dvh - max(16px, env(safe-area-inset-top)) -
+      max(16px, env(safe-area-inset-bottom))
+  );
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: var(--ink);
+  background: #f9f9f2;
+  overscroll-behavior: contain;
+}
+.info-dialog::backdrop {
+  background: #21332ad9;
+}
+.dialog-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f9f9f2;
+  border-block-end: 1px solid var(--line);
+}
+.dialog-header h2 {
+  font-size: 18px;
+  letter-spacing: -0.03em;
+}
+.dialog-content {
+  padding: 20px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: #627653;
+  overflow-wrap: anywhere;
+}
+.dialog-content p + p,
+.dialog-content h3:not(:first-child) {
+  margin-block-start: 16px;
+}
+.dialog-content h3 {
+  font-size: 16px;
+  color: var(--ink);
+}
+.dialog-content > .movement {
+  display: block;
+  inline-size: 220px;
+  max-inline-size: 100%;
+  margin-inline: auto;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+  margin-block-start: 20px;
+}
+.dialog-actions .primary-button {
+  inline-size: auto;
+}
+.warmup-checklist {
+  padding: 0;
+  margin-block: 16px 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+  font-size: 13px;
+}
+.warmup-checklist li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.warmup-checklist strong {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (width <= 600px) {
+  .site-header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0;
+    padding-block: 0 4px;
+  }
+  .brand {
+    font-size: 25px;
+  }
+  .brand-mark {
+    inline-size: 28px;
+    block-size: 28px;
+  }
+  .header-note {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    font-size: 7px;
+  }
+  .site-header nav {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2px;
+  }
+  .site-header nav button {
+    padding-inline: 4px;
+    font-size: 11px;
+  }
+  .site-footer {
+    display: none;
+  }
+  .app-shell {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .hero .eyebrow,
+  .hero p {
+    display: none;
+  }
+  .hero h1 {
+    font-size: clamp(26px, 4.4dvh, 36px);
+    margin: 0;
+  }
+  .hero .text-button {
+    font-size: 10px;
+    padding-inline: 8px;
+  }
+  .week-strip {
+    padding: 8px 10px;
+  }
+  .week-label,
+  .section-title > span {
+    display: none;
+  }
+  .section-title h2 {
+    font-size: 17px;
+  }
+  .workout-cards {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .workout-card {
+    grid-template-columns: 27% minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .card-art .movement {
+    padding: 2px;
+  }
+  .workout-pill {
+    inset: 7px 0 auto;
+    text-align: center;
+    font-size: 7px;
+  }
+  .card-body {
+    align-self: center;
+    padding: 10px 12px;
+  }
+  .card-days {
+    font-size: 7px;
+  }
+  .card-body h3 {
+    font-size: 18px;
+    padding-inline-end: 12px;
+  }
+  .card-body p {
+    font-size: 10px;
+  }
+  .card-meta {
+    gap: 8px;
+    font-size: 9px;
+    margin-block-start: 8px;
+  }
+  .card-arrow {
+    inset: 11px 8px auto auto;
+  }
+  .card-arrow svg {
+    inline-size: 15px;
+  }
+  .food-banner {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .food-icon {
+    inline-size: 36px;
+    block-size: 36px;
+    border-radius: 10px;
+  }
+  .food-banner-copy strong {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .food-banner-copy .eyebrow,
+  .food-banner-copy > span:last-child,
+  .food-banner > svg {
+    display: none;
+  }
+  .food-banner-target strong {
+    font-size: 23px;
+  }
+  .food-banner-target > span {
+    font-size: 6px;
+  }
+  .food-page {
+    padding-block: 8px;
+    gap: 8px;
+  }
+  .food-heading .eyebrow,
+  .food-heading .page-description {
+    display: none;
+  }
+  .food-heading h1 {
+    font-size: clamp(24px, 4.2dvh, 32px);
+    margin: 0;
+  }
+  .food-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 10px;
+  }
+  .protein-card {
+    align-self: stretch;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 2px 14px;
+    padding: 10px 14px;
+  }
+  .protein-card .eyebrow {
+    grid-column: 1 / -1;
+    font-size: 8px;
+  }
+  .protein-target {
+    font-size: 48px;
+    margin: 0;
+  }
+  .protein-card p {
+    align-self: center;
+    font-size: 10px;
+    line-height: 1.7;
+  }
+  .protein-card > svg,
+  .food-notes > p,
+  .meal-row p {
+    display: none;
+  }
+  .food-notes {
+    grid-template-rows: auto repeat(4, minmax(44px, 1fr)) auto;
+  }
+  .food-notes h2 {
+    font-size: 18px;
+    padding-block-end: 4px;
+  }
+  .meal-row {
+    gap: 10px;
+  }
+  .meal-row h3 {
+    font-size: 12px;
+  }
+  .meal-total {
+    font-size: 11px;
+    padding-block-start: 8px;
+  }
+  .food-help {
+    justify-self: center;
+    font-size: 11px;
+  }
+}
+
+@media (height <= 650px) {
+  .hero .eyebrow,
+  .hero p,
+  .section-title {
+    display: none;
+  }
+  .home-page {
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    gap: 8px;
+    padding-block: 8px;
+  }
+  .card-body p {
+    display: none;
+  }
+  .card-meta {
+    gap: 7px;
+  }
+  .week-strip {
+    padding-block: 6px;
+  }
+}
+@media (height <= 500px) and (width > 600px) {
+  .site-header {
+    padding-block: 0 4px;
+  }
+  .site-footer,
+  .header-note {
+    display: none;
+  }
+  .hero h1 {
+    font-size: 26px;
+  }
+  .hero h1 br {
+    display: none;
+  }
+  .hero h1 span::before {
+    content: " ";
+  }
+  .workout-card {
+    grid-template-columns: 28% minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .card-body {
+    align-self: center;
+    padding: 10px;
+  }
+  .card-body h3 {
+    font-size: 17px;
+  }
+  .card-arrow,
+  .week-label,
+  .food-banner-copy > span,
+  .food-banner-target > span {
+    display: none;
+  }
+  .food-banner {
+    padding-block: 6px;
+  }
+  .food-icon {
+    inline-size: 36px;
+    block-size: 36px;
+  }
+  .food-banner-target strong {
+    font-size: 22px;
+  }
+  .food-page {
+    grid-template-columns: minmax(200px, 0.8fr) minmax(0, 1.2fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    padding-block: 8px;
+    gap: 8px 24px;
+  }
+  .food-heading {
+    grid-column: 1;
+  }
+  .food-heading .eyebrow,
+  .food-heading .page-description {
+    display: none;
+  }
+  .food-heading h1 {
+    font-size: 26px;
+    margin: 0;
+  }
+  .food-layout {
+    display: contents;
+  }
+  .protein-card {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 12px;
+  }
+  .protein-target {
+    font-size: 45px;
+    margin: 4px 0;
+  }
+  .protein-card > svg {
+    display: none;
+  }
+  .protein-card p {
+    font-size: 10px;
+  }
+  .food-notes {
+    grid-column: 2;
+    grid-row: 1 / 4;
+  }
+  .food-notes h2 {
+    font-size: 18px;
+  }
+  .food-notes > p,
+  .meal-row p {
+    display: none;
+  }
+  .food-notes {
+    grid-template-rows: auto repeat(4, minmax(44px, 1fr)) auto;
+  }
+  .food-help {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
