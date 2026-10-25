@@ -13,10 +13,8 @@ function mount(workout: Workout = workouts[0]) {
   };
   return { ...render(<WorkoutPlayer {...props} />), props };
 }
-const click = (name: string | RegExp) =>
-  fireEvent.click(screen.getByRole("button", { name }));
-const elapse = (seconds: number) =>
-  act(() => vi.advanceTimersByTime(seconds * 1000));
+const click = (name: string | RegExp) => fireEvent.click(screen.getByRole("button", { name }));
+const elapse = (seconds: number) => act(() => vi.advanceTimersByTime(seconds * 1000));
 function advanceTo(name: string) {
   for (let count = 0; count < 35; count++) {
     if (screen.getByRole("heading", { level: 1 }).textContent === name) return;
@@ -25,23 +23,18 @@ function advanceTo(name: string) {
   throw new Error(`Did not reach ${name}`);
 }
 
-test.each(workouts)(
-  "previews every exercise and its form notes for $name",
-  (workout) => {
-    mount(workout);
-    expect(
-      screen.getByRole("heading", { name: `${workout.name}.` }),
-    ).toBeTruthy();
-    for (const exercise of workout.exercises) {
-      click(new RegExp(exercise.name));
-      const dialog = screen.getByRole("dialog", { name: exercise.name });
-      expect(dialog.textContent).toContain(exercise.detail);
-      fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
-    }
-    click("Workout notes");
-    expect(screen.getByRole("dialog").textContent).toContain("two rounds");
-  },
-);
+test.each(workouts)("previews every exercise and its form notes for $name", (workout) => {
+  mount(workout);
+  expect(screen.getByRole("heading", { name: `${workout.name}.` })).toBeTruthy();
+  for (const exercise of workout.exercises) {
+    click(new RegExp(exercise.name));
+    const dialog = screen.getByRole("dialog", { name: exercise.name });
+    expect(dialog.textContent).toContain(exercise.detail);
+    fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
+  }
+  click("Workout notes");
+  expect(screen.getByRole("dialog").textContent).toContain("two rounds");
+});
 
 test("preparation leads to warm-up, cycles the guide, and pauses while reading help", () => {
   const { props } = mount();
@@ -52,9 +45,7 @@ test("preparation leads to warm-up, cycles the guide, and pauses while reading h
   expect(screen.getByRole("heading", { name: "Warm up" })).toBeTruthy();
   expect(screen.getByRole("timer").textContent).toBe("03:00");
   elapse(15);
-  expect(
-    screen.getByRole("img", { name: "hinge movement illustration" }),
-  ).toBeTruthy();
+  expect(screen.getByRole("img", { name: "hinge movement illustration" })).toBeTruthy();
   click("Guide");
   const dialog = screen.getByRole("dialog", { name: "Your warm-up" });
   expect(within(dialog).getAllByRole("listitem")).toHaveLength(4);
@@ -69,9 +60,7 @@ test("strength sets wait for completion, alternate sides, and rest before the ne
   click("Start workout");
   advanceTo("Push-ups");
   elapse(40);
-  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
-    "Push-ups",
-  );
+  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Push-ups");
   expect(screen.getByRole("timer").textContent).toBe("00:40");
   click("Set complete");
   expect(screen.getByText(/Left leg/)).toBeTruthy();
@@ -80,9 +69,7 @@ test("strength sets wait for completion, alternate sides, and rest before the ne
   click("Set complete");
   expect(screen.getByRole("timer").textContent).toBe("01:00");
   elapse(60);
-  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
-    "Push-ups",
-  );
+  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Push-ups");
   expect(screen.getByText(/ROUND 2 OF 3/)).toBeTruthy();
 });
 
@@ -90,18 +77,12 @@ test("side plank holds automatically switch from left to right and then rest", (
   mount(workouts[1]);
   click("Start workout");
   advanceTo("Side plank");
-  expect(
-    screen.getByText(/Left side/, { selector: ".focus-heading p" }),
-  ).toBeTruthy();
+  expect(screen.getByText(/Left side/, { selector: ".focus-heading p" })).toBeTruthy();
   elapse(35);
-  expect(
-    screen.getByText(/Right side/, { selector: ".focus-heading p" }),
-  ).toBeTruthy();
+  expect(screen.getByText(/Right side/, { selector: ".focus-heading p" })).toBeTruthy();
   expect(screen.getByRole("timer").textContent).toBe("00:35");
   elapse(35);
-  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
-    "Take a breather",
-  );
+  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Take a breather");
 });
 
 test("pause, resume, mute, and restart confirmation work without losing progress", () => {
@@ -109,11 +90,7 @@ test("pause, resume, mute, and restart confirmation work without losing progress
   click("Start workout");
   elapse(2);
   click("Mute sounds");
-  expect(
-    screen
-      .getByRole("button", { name: "Enable sounds" })
-      .getAttribute("aria-pressed"),
-  ).toBe("false");
+  expect(screen.getByRole("button", { name: "Enable sounds" }).getAttribute("aria-pressed")).toBe("false");
   click("Enable sounds");
   click("Pause");
   elapse(10);
@@ -131,23 +108,18 @@ test("pause, resume, mute, and restart confirmation work without losing progress
   expect(props.onFocusChange).toHaveBeenLastCalledWith(false);
 });
 
-test.each(workouts)(
-  "$name finishes with the actual time and its correct set count",
-  (workout) => {
-    const { props } = mount(workout);
-    click("Start workout");
-    elapse(1);
-    click("Pause");
-    advanceTo("Well done.");
-    expect(
-      screen.getByText(workout.id === "a" ? "18" : "21", { exact: true }),
-    ).toBeTruthy();
-    expect(screen.getByText("00:01", { exact: true })).toBeTruthy();
-    click("Continue");
-    expect(props.onBack).toHaveBeenCalledOnce();
-    expect(screen.getByRole("button", { name: "Start workout" })).toBeTruthy();
-  },
-);
+test.each(workouts)("$name finishes with the actual time and its correct set count", (workout) => {
+  const { props } = mount(workout);
+  click("Start workout");
+  elapse(1);
+  click("Pause");
+  advanceTo("Well done.");
+  expect(screen.getByText(workout.id === "a" ? "18" : "21", { exact: true })).toBeTruthy();
+  expect(screen.getByText("00:01", { exact: true })).toBeTruthy();
+  click("Continue");
+  expect(props.onBack).toHaveBeenCalledOnce();
+  expect(screen.getByRole("button", { name: "Start workout" })).toBeTruthy();
+});
 
 test("hiding the player pauses it, and reopening preserves the exact step", () => {
   const { props, rerender } = mount();
@@ -173,9 +145,7 @@ test("audio failure has a visible fallback while controls still work", () => {
   );
   mount();
   click("Start workout");
-  expect(screen.getByRole("status").textContent).toContain(
-    "Audio isn’t available",
-  );
+  expect(screen.getByRole("status").textContent).toContain("Audio isn’t available");
   click("Skip countdown");
   expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Warm up");
 });

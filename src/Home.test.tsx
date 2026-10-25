@@ -21,9 +21,7 @@ test("shows the complete weekly rhythm and opens plan notes", () => {
   expect(within(week).getByLabelText("Rest or walking")).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Plan notes" }));
   const dialog = screen.getByRole("dialog", { name: "Your weekly plan" });
-  expect(dialog.textContent).toContain(
-    "climbing session takes the place of Workout 2",
-  );
+  expect(dialog.textContent).toContain("climbing session takes the place of Workout 2");
   expect(dialog.textContent).toContain("two rounds in week one");
   fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
   expect(screen.queryByRole("dialog")).toBeNull();

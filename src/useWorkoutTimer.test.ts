@@ -12,8 +12,7 @@ test("plays exactly one beep on each of the final three seconds and a different 
   act(() => vi.advanceTimersByTime(2000));
   expect(result.current.remaining).toBe(3);
   expect(audioMock.tones).toEqual([560]);
-  for (let second = 0; second < 3; second++)
-    act(() => vi.advanceTimersByTime(1000));
+  for (let second = 0; second < 3; second++) act(() => vi.advanceTimersByTime(1000));
   expect(audioMock.tones).toEqual([560, 560, 560, 880]);
   expect(result.current.step.kind).toBe("warmup");
   expect(result.current.remaining).toBe(180);
@@ -112,10 +111,7 @@ test("denied wake-lock access leaves the timer usable", async () => {
 
 test("a wake lock acquired after pausing is immediately released", async () => {
   const release = vi.fn().mockResolvedValue(undefined);
-  let resolveLock!: (lock: {
-    release: typeof release;
-    released: boolean;
-  }) => void;
+  let resolveLock!: (lock: { release: typeof release; released: boolean }) => void;
   const request = vi.fn(
     () =>
       new Promise<{ release: typeof release; released: boolean }>((resolve) => {

@@ -18,19 +18,12 @@ export const initialTimer: TimerState = {
 };
 
 // Consume elapsed wall time, including delayed browser ticks, without accumulating drift.
-export function tickTimer(
-  state: TimerState,
-  steps: Step[],
-  now: number,
-): TimerState {
+export function tickTimer(state: TimerState, steps: Step[], now: number): TimerState {
   if (state.status !== "running") return state;
   const delta = Math.max(0, (now - state.lastTick) / 1000);
   let elapsed = state.elapsed + delta;
   let index = state.index;
-  while (
-    steps[index]?.seconds !== undefined &&
-    elapsed >= steps[index].seconds!
-  ) {
+  while (steps[index]?.seconds !== undefined && elapsed >= steps[index].seconds!) {
     elapsed -= steps[index].seconds!;
     index++;
   }
@@ -44,14 +37,9 @@ export function tickTimer(
   };
 }
 
-export function advanceTimer(
-  state: TimerState,
-  steps: Step[],
-  now: number,
-): TimerState {
+export function advanceTimer(state: TimerState, steps: Step[], now: number): TimerState {
   const current = tickTimer(state, steps, now);
-  if (current.status === "complete" || current.status === "ready")
-    return current;
+  if (current.status === "complete" || current.status === "ready") return current;
   // A timed step may have finished since the button was rendered.
   if (current.index !== state.index) return current;
   const index = current.index + 1;

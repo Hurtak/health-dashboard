@@ -1,11 +1,5 @@
 import { expect, test } from "vitest";
-import {
-  advanceTimer,
-  formatTime,
-  initialTimer,
-  remainingSeconds,
-  tickTimer,
-} from "./timer";
+import { advanceTimer, formatTime, initialTimer, remainingSeconds, tickTimer } from "./timer";
 import { buildSteps, workouts } from "./workouts";
 import type { TimerState } from "./timer";
 
@@ -16,27 +10,22 @@ const running: TimerState = {
   lastTick: 1000,
 };
 
-test.each(workouts)(
-  "$name preserves pairs, rounds, both sides, and rests",
-  (workout) => {
-    const plan = buildSteps(workout);
-    expect(plan[0].seconds).toBe(5);
-    expect(plan[1].seconds).toBe(180);
-    expect(plan.filter((step) => step.kind === "rest")).toHaveLength(5);
-    for (const exercise of workout.exercises) {
-      const sets = plan.filter((step) => step.exercise === exercise);
-      expect(sets).toHaveLength(exercise.sides ? 6 : 3);
-      if (exercise.sides) {
-        expect(sets.filter((step) => step.side === "Left")).toHaveLength(3);
-        expect(sets.filter((step) => step.side === "Right")).toHaveLength(3);
-      }
+test.each(workouts)("$name preserves pairs, rounds, both sides, and rests", (workout) => {
+  const plan = buildSteps(workout);
+  expect(plan[0].seconds).toBe(5);
+  expect(plan[1].seconds).toBe(180);
+  expect(plan.filter((step) => step.kind === "rest")).toHaveLength(5);
+  for (const exercise of workout.exercises) {
+    const sets = plan.filter((step) => step.exercise === exercise);
+    expect(sets).toHaveLength(exercise.sides ? 6 : 3);
+    if (exercise.sides) {
+      expect(sets.filter((step) => step.side === "Left")).toHaveLength(3);
+      expect(sets.filter((step) => step.side === "Right")).toHaveLength(3);
     }
-    expect(plan.at(-1)?.exercise).toBe(workout.exercises[3]);
-    expect(
-      plan.filter((step) => step.kind === "exercise" && step.seconds),
-    ).toHaveLength(workout.id === "b" ? 6 : 0);
-  },
-);
+  }
+  expect(plan.at(-1)?.exercise).toBe(workout.exercises[3]);
+  expect(plan.filter((step) => step.kind === "exercise" && step.seconds)).toHaveLength(workout.id === "b" ? 6 : 0);
+});
 
 test("delayed ticks cross timed phases and stop in a rep-based set", () => {
   const after = tickTimer(running, steps, 191_000);
@@ -51,11 +40,7 @@ test("pause and resume exclude the paused duration", () => {
   const current = tickTimer(running, steps, 3000);
   const paused: TimerState = { ...current, status: "paused" };
   expect(tickTimer(paused, steps, 100_000)).toBe(paused);
-  const resumed = tickTimer(
-    { ...paused, status: "running", lastTick: 100_000 },
-    steps,
-    101_000,
-  );
+  const resumed = tickTimer({ ...paused, status: "running", lastTick: 100_000 }, steps, 101_000);
   expect(resumed.elapsed).toBe(3);
   expect(resumed.totalElapsed).toBe(3);
 });

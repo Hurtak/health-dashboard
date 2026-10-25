@@ -15,15 +15,10 @@ interface Props {
 }
 type Info = "plan" | "warmup" | "form" | "restart" | Exercise;
 
-export default function WorkoutPlayer({
-  workout,
-  visible,
-  onBack,
-  onFocusChange,
-}: Props) {
+export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange }: Props) {
   const steps = useMemo(() => buildSteps(workout), [workout]);
   const timer = useWorkoutTimer(steps);
-  const { state, step, remaining } = timer;
+  const { state, step, remaining, pause } = timer;
   const [info, setInfo] = useState<Info | null>(null);
   const ready = state.status === "ready";
   const complete = state.status === "complete";
@@ -34,21 +29,16 @@ export default function WorkoutPlayer({
   const warmupExercise = warmup[Math.floor(state.elapsed / 15) % warmup.length];
   const illustration = isWarmup
     ? warmupExercise.movement
-    : (step?.exercise?.movement ??
-      (isRest ? "rest" : workout.exercises[0].movement));
+    : (step?.exercise?.movement ?? (isRest ? "rest" : workout.exercises[0].movement));
   const next = steps[state.index + 1];
-  const completedSets = steps
-    .slice(0, state.index)
-    .filter((item) => item.kind === "exercise").length;
+  const completedSets = steps.slice(0, state.index).filter((item) => item.kind === "exercise").length;
   const totalSets = steps.filter((item) => item.kind === "exercise").length;
   const circumference = 2 * Math.PI * 144;
-  const progress = step?.seconds
-    ? Math.min(1, state.elapsed / step.seconds)
-    : completedSets / totalSets;
+  const progress = step?.seconds ? Math.min(1, state.elapsed / step.seconds) : completedSets / totalSets;
 
   useEffect(() => {
-    if (!visible) timer.pause();
-  }, [visible, timer.pause]);
+    if (!visible) pause();
+  }, [visible, pause]);
   useEffect(() => {
     if (visible) onFocusChange(!ready);
   }, [visible, ready, onFocusChange]);
@@ -120,17 +110,16 @@ export default function WorkoutPlayer({
         <>
           <p>{workout.description}</p>
           <p>
-            Do the two exercises in each pair back-to-back, rest for 60 seconds,
-            and repeat for three rounds. Complete all three rounds of Pair 1
-            before starting Pair 2.
+            Do the two exercises in each pair back-to-back, rest for 60 seconds, and repeat for three rounds. Complete
+            all three rounds of Pair 1 before starting Pair 2.
           </p>
           <p>
-            Finish each set with 1–2 clean reps left. Your first week calls for
-            two rounds; this timer follows the regular three-round routine.
+            Finish each set with 1–2 clean reps left. Your first week calls for two rounds; this timer follows the
+            regular three-round routine.
           </p>
           <p>
-            Strength sets use a stopwatch: finish the reps, then tap Set
-            complete. Warm-up, rests, and plank holds count down automatically.
+            Strength sets use a stopwatch: finish the reps, then tap Set complete. Warm-up, rests, and plank holds count
+            down automatically.
           </p>
           <p>Keep this tab open and your device awake for countdown sounds.</p>
         </>
@@ -175,10 +164,7 @@ export default function WorkoutPlayer({
         </div>
         <section className="preview-exercises" aria-label="Workout exercises">
           <h2>Your session</h2>
-          <button
-            className="preview-exercise"
-            onClick={() => showInfo("warmup")}
-          >
+          <button className="preview-exercise" onClick={() => showInfo("warmup")}>
             <span className="exercise-thumbnail">
               <Icon name="sun" size={26} />
             </span>
@@ -194,40 +180,31 @@ export default function WorkoutPlayer({
                 PAIR {block + 1}
                 <span>Back-to-back · 3 rounds</span>
               </p>
-              {workout.exercises
-                .slice(block * 2, block * 2 + 2)
-                .map((exercise) => (
-                  <button
-                    className="preview-exercise"
-                    key={exercise.name}
-                    onClick={() => showInfo(exercise)}
-                  >
-                    <span className="exercise-thumbnail">
-                      <MovementDiagram movement={exercise.movement} />
-                    </span>
-                    <span>
-                      <strong>{exercise.name}</strong>
-                      <small>
-                        {exercise.reps}
-                        {exercise.sides
-                          ? exercise.movement === "lunge"
-                            ? " per leg"
-                            : exercise.movement === "plank"
-                              ? " per side"
-                              : " per arm"
-                          : ""}
-                      </small>
-                    </span>
-                    <Icon name="arrow" size={17} />
-                  </button>
-                ))}
+              {workout.exercises.slice(block * 2, block * 2 + 2).map((exercise) => (
+                <button className="preview-exercise" key={exercise.name} onClick={() => showInfo(exercise)}>
+                  <span className="exercise-thumbnail">
+                    <MovementDiagram movement={exercise.movement} />
+                  </span>
+                  <span>
+                    <strong>{exercise.name}</strong>
+                    <small>
+                      {exercise.reps}
+                      {exercise.sides
+                        ? exercise.movement === "lunge"
+                          ? " per leg"
+                          : exercise.movement === "plank"
+                            ? " per side"
+                            : " per arm"
+                        : ""}
+                    </small>
+                  </span>
+                  <Icon name="arrow" size={17} />
+                </button>
+              ))}
             </div>
           ))}
         </section>
-        <button
-          className="text-button preview-help"
-          onClick={() => showInfo("plan")}
-        >
+        <button className="text-button preview-help" onClick={() => showInfo("plan")}>
           Workout notes
           <Icon name="arrow" size={17} />
         </button>
@@ -236,16 +213,9 @@ export default function WorkoutPlayer({
     );
 
   return (
-    <section
-      className={`focus-workout ${isRest ? "is-rest" : ""}`}
-      aria-label="Workout timer"
-    >
+    <section className={`focus-workout ${isRest ? "is-rest" : ""}`} aria-label="Workout timer">
       <header className="focus-top">
-        <button
-          className="icon-button"
-          onClick={onBack}
-          aria-label="Back to overview"
-        >
+        <button className="icon-button" onClick={onBack} aria-label="Back to overview">
           <Icon name="back" size={22} />
         </button>
         <span className="eyebrow">DAILY / WORKOUT {workout.number}</span>
@@ -308,9 +278,7 @@ export default function WorkoutPlayer({
               <dd>{totalSets}</dd>
             </div>
           </dl>
-          <p className="completion-message">
-            Small sessions. Lasting progress.
-          </p>
+          <p className="completion-message">Small sessions. Lasting progress.</p>
           <button
             className="primary-button"
             onClick={() => {
@@ -351,14 +319,8 @@ export default function WorkoutPlayer({
               </p>
             </header>
             <div className="movement-stage">
-              <div
-                className={`movement-ring ${remaining !== undefined && remaining <= 3 ? "last-seconds" : ""}`}
-              >
-                <svg
-                  className="focus-ring"
-                  viewBox="0 0 300 300"
-                  aria-hidden="true"
-                >
+              <div className={`movement-ring ${remaining !== undefined && remaining <= 3 ? "last-seconds" : ""}`}>
+                <svg className="focus-ring" viewBox="0 0 300 300" aria-hidden="true">
                   <circle cx="150" cy="150" r="144" className="ring-track" />
                   <circle
                     cx="150"
@@ -366,38 +328,17 @@ export default function WorkoutPlayer({
                     r="144"
                     className="ring-fill"
                     strokeDasharray={circumference}
-                    strokeDashoffset={
-                      circumference * (step.seconds ? progress : 1 - progress)
-                    }
+                    strokeDashoffset={circumference * (step.seconds ? progress : 1 - progress)}
                   />
                 </svg>
-                <MovementDiagram
-                  movement={illustration}
-                  playing={!paused}
-                  side={step.side}
-                />
+                <MovementDiagram movement={illustration} playing={!paused} side={step.side} />
               </div>
             </div>
-            <div
-              className={`focus-countdown ${remaining !== undefined && remaining <= 3 ? "last-seconds" : ""}`}
-            >
-              <strong
-                role="timer"
-                aria-label={
-                  remaining === undefined
-                    ? "Set elapsed time"
-                    : "Time remaining"
-                }
-              >
+            <div className={`focus-countdown ${remaining !== undefined && remaining <= 3 ? "last-seconds" : ""}`}>
+              <strong role="timer" aria-label={remaining === undefined ? "Set elapsed time" : "Time remaining"}>
                 {formatTime(remaining ?? state.elapsed)}
               </strong>
-              <span>
-                {remaining === undefined
-                  ? "SET ELAPSED · GO AT YOUR PACE"
-                  : paused
-                    ? "PAUSED"
-                    : "REMAINING"}
-              </span>
+              <span>{remaining === undefined ? "SET ELAPSED · GO AT YOUR PACE" : paused ? "PAUSED" : "REMAINING"}</span>
             </div>
             <p className="focus-cue">
               {isWarmup
@@ -440,16 +381,10 @@ export default function WorkoutPlayer({
             </p>
             <div className="focus-meta">
               <span>{formatTime(state.totalElapsed)} total</span>
-              <button
-                className="text-button"
-                onClick={() => showInfo(isWarmup ? "warmup" : "form")}
-              >
+              <button className="text-button" onClick={() => showInfo(isWarmup ? "warmup" : "form")}>
                 Guide
               </button>
-              <button
-                className="text-button"
-                onClick={() => showInfo("restart")}
-              >
+              <button className="text-button" onClick={() => showInfo("restart")}>
                 <Icon name="reset" size={15} />
                 Restart
               </button>

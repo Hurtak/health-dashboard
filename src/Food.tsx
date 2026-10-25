@@ -36,9 +36,7 @@ export default function Food() {
           <br />
           Keep it simple<span className="period">.</span>
         </h1>
-        <p className="page-description">
-          Your food notes, all in one place. No tracking, no overthinking.
-        </p>
+        <p className="page-description">Your food notes, all in one place. No tracking, no overthinking.</p>
       </header>
       <div className="food-layout">
         <section className="protein-card" aria-label="Daily protein target">
@@ -71,34 +69,25 @@ export default function Food() {
           </div>
         </section>
       </div>
-      <button
-        className="text-button food-help"
-        onClick={() => setShowNotes(true)}
-      >
+      <button className="text-button food-help" onClick={() => setShowNotes(true)}>
         Food notes & skyr portions
         <Icon name="arrow" size={17} />
       </button>
       {showNotes && (
-        <InfoDialog
-          title="Food notes & skyr portions"
-          onClose={() => setShowNotes(false)}
-        >
+        <InfoDialog title="Food notes & skyr portions" onClose={() => setShowNotes(false)}>
           <h3>500 g a day. Two easy portions.</h3>
           <p>
-            Your plan uses plain skyr with 12 g protein per 100 g. Check the
-            label: brands vary. A 130 g cup at that concentration gives you 15.6
-            g of protein.
+            Your plan uses plain skyr with 12 g protein per 100 g. Check the label: brands vary. A 130 g cup at that
+            concentration gives you 15.6 g of protein.
           </p>
           <h3>Consistency over exact numbers.</h3>
           <p>
-            Meat portions vary, so the meal numbers are estimates. Your original
-            notes suggest ~675 g of skyr if meals give 30 g each, or ~350 g if
-            they give 50 g each.
+            Meat portions vary, so the meal numbers are estimates. Your original notes suggest ~675 g of skyr if meals
+            give 30 g each, or ~350 g if they give 50 g each.
           </p>
           <p>
-            From your original plan: keep walking, use a modest calorie deficit,
-            and check your waist every two weeks. Follow your average morning
-            weight rather than individual daily readings.
+            From your original plan: keep walking, use a modest calorie deficit, and check your waist every two weeks.
+            Follow your average morning weight rather than individual daily readings.
           </p>
         </InfoDialog>
       )}

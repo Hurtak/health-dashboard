@@ -67,13 +67,7 @@ const paths: Record<IconName, React.ReactNode> = {
   ),
 };
 
-export default function Icon({
-  name,
-  size = 20,
-}: {
-  name: IconName;
-  size?: number;
-}) {
+export default function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   return (
     <svg
       width={size}

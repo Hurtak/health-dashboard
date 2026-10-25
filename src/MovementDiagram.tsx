@@ -1,16 +1,10 @@
 import { useId } from "react";
 import type { CSSProperties } from "react";
 import type { Movement } from "./workouts";
-import {
-  anatomy,
-  ground,
-  movementDescriptions,
-  poseFor,
-} from "./movementPoses";
+import { anatomy, ground, movementDescriptions, poseFor } from "./movementPoses";
 import type { Limb, Phase, Point, Pose } from "./movementPoses";
 
-const points = (values: readonly Point[]) =>
-  values.map((point) => point.join(",")).join(" ");
+const points = (values: readonly Point[]) => values.map((point) => point.join(",")).join(" ");
 
 function Arm({ limb, far = false }: { limb: Limb; far?: boolean }) {
   return (
@@ -20,36 +14,19 @@ function Arm({ limb, far = false }: { limb: Limb; far?: boolean }) {
     </g>
   );
 }
-function Leg({
-  limb,
-  toe,
-  far = false,
-}: {
-  limb: Limb;
-  toe: Point;
-  far?: boolean;
-}) {
+function Leg({ limb, toe, far = false }: { limb: Limb; toe: Point; far?: boolean }) {
   return (
     <g className={far ? "figure-leg figure-far" : "figure-leg"}>
       <polyline points={points(limb)} />
-      <path
-        className="figure-shoe"
-        d={`M${limb[2].join(" ")} L${toe.join(" ")}`}
-      />
+      <path className="figure-shoe" d={`M${limb[2].join(" ")} L${toe.join(" ")}`} />
     </g>
   );
 }
 function Kettlebell({ grip, rotation }: NonNullable<Pose["bell"]>) {
   return (
-    <g
-      className="kettlebell"
-      transform={`translate(${grip.join(" ")}) rotate(${rotation})`}
-    >
+    <g className="kettlebell" transform={`translate(${grip.join(" ")}) rotate(${rotation})`}>
       <path className="kettlebell-handle" d="M-5.5 7V3a5.5 5.5 0 0 1 11 0v4" />
-      <path
-        className="kettlebell-body"
-        d="M-6.5 6.5C-9 10-11 17-6 20Q0 23 6 20C11 17 9 10 6.5 6.5Z"
-      />
+      <path className="kettlebell-body" d="M-6.5 6.5C-9 10-11 17-6 20Q0 23 6 20C11 17 9 10 6.5 6.5Z" />
       <path className="kettlebell-highlight" d="M-5 10q-2 3-1 6" />
     </g>
   );
@@ -67,24 +44,12 @@ function Figure({ pose }: { pose: Pose }) {
       <Leg limb={pose.legs[0]} toe={pose.toes[0]} far />
       <Arm limb={pose.arms[0]} far />
       <Leg limb={pose.legs[1]} toe={pose.toes[1]} />
-      <path
-        className="figure-neck"
-        d={`M${shoulder.join(" ")} L${pose.head.join(" ")}`}
-      />
+      <path className="figure-neck" d={`M${shoulder.join(" ")} L${pose.head.join(" ")}`} />
       <polyline className="figure-shoulders" points={points(pose.shoulders)} />
-      <polyline
-        className="figure-shirt"
-        points={points([shoulder, waist, hip])}
-      />
-      <path
-        className="figure-shorts"
-        d={`M${waist.join(" ")} L${hip.join(" ")}`}
-      />
+      <polyline className="figure-shirt" points={points([shoulder, waist, hip])} />
+      <path className="figure-shorts" d={`M${waist.join(" ")} L${hip.join(" ")}`} />
       <Arm limb={pose.arms[1]} />
-      <g
-        className="figure-head"
-        transform={`translate(${pose.head.join(" ")}) rotate(${pose.headAngle})`}
-      >
+      <g className="figure-head" transform={`translate(${pose.head.join(" ")}) rotate(${pose.headAngle})`}>
         <circle r={anatomy.headRadius} />
         {pose.front ? (
           <>
@@ -132,11 +97,7 @@ export default function MovementDiagram({
   const descriptionId = useId();
   const arrowId = useId();
   const fixed = phase !== undefined || movement === "plank";
-  const cycle: Phase[] = fixed
-    ? [phase ?? 0]
-    : movement === "circles"
-      ? [0, 1, 2]
-      : [0, 1, 2, 1];
+  const cycle: Phase[] = fixed ? [phase ?? 0] : movement === "circles" ? [0, 1, 2] : [0, 1, 2, 1];
   return (
     <svg
       className={`movement movement--${movement} ${className} ${playing ? "" : "is-still"}`}
@@ -164,30 +125,15 @@ export default function MovementDiagram({
       </defs>
       <ellipse cx="130" cy="194" rx="86" ry="3" className="movement-shadow" />
       <path d={`M24 ${ground}H236`} className="movement-ground" />
-      <g
-        className="movement-scene"
-        transform={
-          side === "Right" ? "translate(260 0) scale(-1 1)" : undefined
-        }
-      >
+      <g className="movement-scene" transform={side === "Right" ? "translate(260 0) scale(-1 1)" : undefined}>
         {["pushup", "plank", "crunch"].includes(movement) && (
-          <rect
-            x="28"
-            y={ground}
-            width="204"
-            height="4"
-            rx="2"
-            className="movement-mat"
-          />
+          <rect x="28" y={ground} width="204" height="4" rx="2" className="movement-mat" />
         )}
         {movement === "rest" ? (
           <g className="rest-drawing">
             <path d="M118 104v-8a12 12 0 0 1 24 0v8" />
             <path d="M115 104h30l6 69q1 12-10 12h-22q-11 0-10-12z" />
-            <path
-              d="M119 147q6-4 12 0t12 0m-25 10h24"
-              className="bottle-water"
-            />
+            <path d="M119 147q6-4 12 0t12 0m-25 10h24" className="bottle-water" />
           </g>
         ) : (
           cycle.map((poseIndex, frame) => (
@@ -201,18 +147,10 @@ export default function MovementDiagram({
           ))
         )}
         {movement === "circles" && (
-          <path
-            d="M181 75a51 51 0 1 0-51 51"
-            className="movement-cue"
-            markerEnd={`url(#${arrowId})`}
-          />
+          <path d="M181 75a51 51 0 1 0-51 51" className="movement-cue" markerEnd={`url(#${arrowId})`} />
         )}
         {movement === "crunch" && (
-          <path
-            d="M119 174q-7-17-19-17"
-            className="movement-cue"
-            markerEnd={`url(#${arrowId})`}
-          />
+          <path d="M119 174q-7-17-19-17" className="movement-cue" markerEnd={`url(#${arrowId})`} />
         )}
       </g>
     </svg>

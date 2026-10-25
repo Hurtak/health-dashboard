@@ -19,12 +19,7 @@ export default function InfoDialog({
   }, []);
 
   return (
-    <dialog
-      ref={ref}
-      className="info-dialog"
-      aria-labelledby={titleId}
-      onCancel={onClose}
-    >
+    <dialog ref={ref} className="info-dialog" aria-labelledby={titleId} onCancel={onClose}>
       <header className="dialog-header">
         <h2 id={titleId}>{title}</h2>
         <button className="text-button" onClick={onClose} autoFocus>

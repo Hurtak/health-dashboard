@@ -4,11 +4,7 @@ import InfoDialog from "./InfoDialog";
 import MovementDiagram from "./MovementDiagram";
 import { workouts } from "./workouts";
 
-export default function Home({
-  onNavigate,
-}: {
-  onNavigate: (view: "a" | "b" | "food") => void;
-}) {
+export default function Home({ onNavigate }: { onNavigate: (view: "a" | "b" | "food") => void }) {
   const [showNotes, setShowNotes] = useState(false);
   return (
     <div className="home-page">
@@ -32,32 +28,14 @@ export default function Home({
           <strong>A week in balance.</strong>
         </div>
         <div className="week-days">
-          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-            (day, index) => (
-              <div
-                className={`week-day ${index === 6 ? "rest-day" : index % 2 ? "day-b" : "day-a"}`}
-                key={day}
-              >
-                <span>{day}</span>
-                <span
-                  className="day-badge"
-                  aria-label={
-                    index === 6
-                      ? "Rest or walking"
-                      : `Workout ${(index % 2) + 1}`
-                  }
-                >
-                  {index === 6 ? (
-                    <Icon name="sun" size={16} />
-                  ) : index % 2 ? (
-                    "02"
-                  ) : (
-                    "01"
-                  )}
-                </span>
-              </div>
-            ),
-          )}
+          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, index) => (
+            <div className={`week-day ${index === 6 ? "rest-day" : index % 2 ? "day-b" : "day-a"}`} key={day}>
+              <span>{day}</span>
+              <span className="day-badge" aria-label={index === 6 ? "Rest or walking" : `Workout ${(index % 2) + 1}`}>
+                {index === 6 ? <Icon name="sun" size={16} /> : index % 2 ? "02" : "01"}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
       <div className="section-title">
@@ -75,9 +53,7 @@ export default function Home({
             <div className="card-art">
               <span className="workout-pill">WORKOUT {workout.number}</span>
               <span className="art-circle" />
-              <MovementDiagram
-                movement={workout.id === "a" ? "lunge" : "row"}
-              />
+              <MovementDiagram movement={workout.id === "a" ? "lunge" : "row"} />
             </div>
             <div className="card-body">
               <span className="card-days">{workout.days}</span>
@@ -98,11 +74,7 @@ export default function Home({
           </button>
         ))}
       </section>
-      <button
-        className="food-banner"
-        onClick={() => onNavigate("food")}
-        aria-label="Food: daily protein plan"
-      >
+      <button className="food-banner" onClick={() => onNavigate("food")} aria-label="Food: daily protein plan">
         <span className="food-icon">
           <Icon name="leaf" size={26} />
         </span>
@@ -120,25 +92,19 @@ export default function Home({
         <Icon name="arrow" />
       </button>
       {showNotes && (
-        <InfoDialog
-          title="Your weekly plan"
-          onClose={() => setShowNotes(false)}
-        >
+        <InfoDialog title="Your weekly plan" onClose={() => setShowNotes(false)}>
           <p>
-            Alternate Workout 1 on Monday, Wednesday, and Friday with Workout 2
-            on Tuesday, Thursday, and Saturday. Rest or walk on Sunday.
+            Alternate Workout 1 on Monday, Wednesday, and Friday with Workout 2 on Tuesday, Thursday, and Saturday. Rest
+            or walk on Sunday.
+          </p>
+          <p>One 10 kg kettlebell, a mat, and a little space are all you need.</p>
+          <p>
+            A climbing session takes the place of Workout 2. If your elbows or forearms are still sore, skip curls in
+            the next Workout 2.
           </p>
           <p>
-            One 10 kg kettlebell, a mat, and a little space are all you need.
-          </p>
-          <p>
-            A climbing session takes the place of Workout 2. If your elbows or
-            forearms are still sore, skip curls in the next Workout 2.
-          </p>
-          <p>
-            Your original plan calls for two rounds in week one. The timers use
-            the regular three-round routine. Finish each set with 1–2 clean reps
-            left.
+            Your original plan calls for two rounds in week one. The timers use the regular three-round routine. Finish
+            each set with 1–2 clean reps left.
           </p>
         </InfoDialog>
       )}

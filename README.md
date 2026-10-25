@@ -7,13 +7,19 @@ npm install
 npm run dev
 ```
 
-Open the localhost URL printed by Vite. Use Node 22.18+.
+Open the localhost URL printed by Vite. Use Node 24, matching CI.
 
 ## Checks
 
+- `npm run validate` runs tests, type checking, linting, formatting checks, and the production build.
 - `npm test` runs Vitest unit and React component tests in jsdom.
 - `npm run test:watch` runs the same tests interactively.
-- `npm run build` type-checks the application and tests, then builds the app.
+- `npm run type-check` checks the application, tests, and Vite configuration.
+- `npm run lint` checks TypeScript, React Hooks, and Vite Fast Refresh rules; warnings fail validation.
+- `npm run prettier` checks formatting. Use `npm run prettier:fix` or `npm run lint:fix` to apply automatic fixes.
+- `npm run build` creates the production app in `dist/`.
+
+GitHub Actions runs the **Main workflow** on every push and pull request. Its `validate` job uses Node 24, installs the lockfile with `npm ci`, and runs the same `npm run validate` command as local development. Script names, the workflow filename, and the 120-column Prettier setting follow `petrhurtak.com`.
 
 Tests cover both workout sequences, every screen, exercise guides, native dialogs, timer transitions, pause/resume, restart confirmation, navigation with preserved sessions, side-plank holds, the last three audio cues, mute, unavailable audio, and wake-lock cleanup. There is no end-to-end test suite or browser test dependency.
 

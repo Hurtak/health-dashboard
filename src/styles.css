@@ -130,8 +130,7 @@ h1 {
   block-size: 100dvh;
   max-inline-size: 1280px;
   margin-inline: auto;
-  padding-block: max(8px, env(safe-area-inset-top))
-    max(8px, env(safe-area-inset-bottom));
+  padding-block: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-bottom));
   padding-inline: max(clamp(16px, 4vw, 60px), env(safe-area-inset-left))
     max(clamp(16px, 4vw, 60px), env(safe-area-inset-right));
   display: grid;
@@ -586,10 +585,7 @@ h1 {
 .info-dialog {
   overflow: auto;
   inline-size: min(540px, calc(100vw - 24px));
-  max-block-size: calc(
-    100dvh - max(16px, env(safe-area-inset-top)) -
-      max(16px, env(safe-area-inset-bottom))
-  );
+  max-block-size: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)));
   padding: 0;
   border: 1px solid var(--line);
   border-radius: 16px;

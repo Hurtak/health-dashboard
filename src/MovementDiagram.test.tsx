@@ -30,9 +30,7 @@ test.each<Movement>([
 test("the side-plank guide holds a single pose while other strength movements show a controlled return", () => {
   const { container, rerender } = render(<MovementDiagram movement="plank" />);
   expect(container.querySelectorAll(".movement-frame")).toHaveLength(1);
-  expect(
-    container.querySelector(".movement-frame")?.classList.contains("is-fixed"),
-  ).toBe(true);
+  expect(container.querySelector(".movement-frame")?.classList.contains("is-fixed")).toBe(true);
   rerender(<MovementDiagram movement="curl" />);
   expect(container.querySelectorAll(".movement-frame")).toHaveLength(4);
   rerender(<MovementDiagram movement="circles" />);
@@ -41,9 +39,7 @@ test("the side-plank guide holds a single pose while other strength movements sh
 
 test("right-side steps mirror the diagram and describe the active side", () => {
   const { container } = render(<MovementDiagram movement="row" side="Right" />);
-  expect(
-    container.querySelector(".movement-scene")?.getAttribute("transform"),
-  ).toBe("translate(260 0) scale(-1 1)");
+  expect(container.querySelector(".movement-scene")?.getAttribute("transform")).toBe("translate(260 0) scale(-1 1)");
   expect(container.querySelector("desc")?.textContent).toContain("Right side.");
   expect(container.querySelector(".figure-bench")).toBeTruthy();
 });

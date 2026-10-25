@@ -13,19 +13,14 @@ export default function App() {
   const [openedWorkouts, setOpenedWorkouts] = useState<Set<string>>(new Set());
   function navigate(next: View) {
     setFocusMode(false);
-    if (next === "a" || next === "b")
-      setOpenedWorkouts((previous) => new Set(previous).add(next));
+    if (next === "a" || next === "b") setOpenedWorkouts((previous) => new Set(previous).add(next));
     setView(next);
   }
 
   return (
     <div className={`app-shell ${focusMode ? "training-mode" : ""}`}>
       <header className="site-header">
-        <button
-          className="brand"
-          onClick={() => navigate("home")}
-          aria-label="Daily home"
-        >
+        <button className="brand" onClick={() => navigate("home")} aria-label="Daily home">
           <span className="brand-mark">
             <Icon name="weight" size={24} />
           </span>

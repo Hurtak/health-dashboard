@@ -78,8 +78,7 @@ export const workouts: Workout[] = [
         reps: "10–15 reps",
         movement: "pushup",
         cue: "Lower as one unit. Press the floor away.",
-        detail:
-          "Hands just wider than shoulders. Keep your elbows angled back and your core engaged.",
+        detail: "Hands just wider than shoulders. Keep your elbows angled back and your core engaged.",
       },
       {
         name: "Kettlebell reverse lunges",
@@ -104,8 +103,7 @@ export const workouts: Workout[] = [
         reps: "12–20 reps",
         movement: "crunch",
         cue: "Curl your pelvis up. Lower with control.",
-        detail:
-          "Keep your knees bent. Lift your hips slightly off the floor without swinging your legs.",
+        detail: "Keep your knees bent. Lift your hips slightly off the floor without swinging your legs.",
       },
     ],
   },
@@ -115,8 +113,7 @@ export const workouts: Workout[] = [
     name: "Pull & stability",
     subtitle: "Row. Hinge. Curl. Hold.",
     days: "TUE · THU · SAT",
-    description:
-      "Give your back, biceps, and posterior chain their turn. Finish strong with a little stillness.",
+    description: "Give your back, biceps, and posterior chain their turn. Finish strong with a little stillness.",
     exercises: [
       {
         name: "One-arm kettlebell row",
@@ -124,16 +121,14 @@ export const workouts: Workout[] = [
         movement: "row",
         sides: true,
         cue: "Pull your elbow toward your hip. Keep your back still.",
-        detail:
-          "Hinge forward and support your free hand on a sturdy surface. Lower the kettlebell with control.",
+        detail: "Hinge forward and support your free hand on a sturdy surface. Lower the kettlebell with control.",
       },
       {
         name: "Kettlebell Romanian deadlift",
         reps: "12–20 reps",
         movement: "deadlift",
         cue: "Hips back. Long spine. Stand tall.",
-        detail:
-          "Hold the kettlebell with both hands. Keep your knees soft and the weight close to your legs.",
+        detail: "Hold the kettlebell with both hands. Keep your knees soft and the weight close to your legs.",
       },
       {
         name: "Kettlebell biceps curl",
@@ -175,13 +170,8 @@ export function buildSteps(workout: Workout): Step[] {
   ];
   for (let block = 0; block < 2; block++) {
     for (let round = 1; round <= 3; round++) {
-      for (const exercise of workout.exercises.slice(
-        block * 2,
-        block * 2 + 2,
-      )) {
-        for (const side of exercise.sides
-          ? (["Left", "Right"] as const)
-          : [undefined]) {
+      for (const exercise of workout.exercises.slice(block * 2, block * 2 + 2)) {
+        for (const side of exercise.sides ? (["Left", "Right"] as const) : [undefined]) {
           steps.push({
             kind: "exercise",
             name: exercise.name,
