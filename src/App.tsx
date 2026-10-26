@@ -21,32 +21,31 @@ export default function App() {
     <div className={`app-shell ${focusMode ? "training-mode" : ""}`}>
       <header className="site-header">
         <button className="brand" onClick={() => navigate("home")} aria-label="Daily home">
-          <span className="brand-mark">
-            <Icon name="weight" size={24} />
-          </span>
-          daily<span className="brand-dot">.</span>
+          <Icon name="weight" size={26} />
+          daily
         </button>
-        <nav aria-label="Main navigation">
-          {(
-            [
-              { id: "home", label: "Overview" },
-              { id: "a", label: "Workout 1" },
-              { id: "b", label: "Workout 2" },
-              { id: "food", label: "Food" },
-            ] as const
-          ).map((item) => (
-            <button
-              key={item.id}
-              className={view === item.id ? "active" : ""}
-              onClick={() => navigate(item.id)}
-              aria-current={view === item.id ? "page" : undefined}
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
-        <span className="header-note">ONE DAY AT A TIME</span>
+        <p className="brand-description">Your strength routine.</p>
       </header>
+      <nav className="site-nav" aria-label="Main navigation">
+        {(
+          [
+            { id: "home", label: "Overview", icon: "home" },
+            { id: "a", label: "Workout A", icon: "weight" },
+            { id: "b", label: "Workout B", icon: "weight" },
+            { id: "food", label: "Food", icon: "leaf" },
+          ] as const
+        ).map((item) => (
+          <button
+            key={item.id}
+            className={view === item.id ? "active" : ""}
+            onClick={() => navigate(item.id)}
+            aria-current={view === item.id ? "page" : undefined}
+          >
+            <Icon name={item.icon} size={18} />
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </nav>
       <main>
         {view === "home" && <Home onNavigate={navigate} />}
         {workouts
@@ -63,9 +62,12 @@ export default function App() {
         {view === "food" && <Food />}
       </main>
       <footer className="site-footer">
-        <span>SHOW UP. KEEP IT SIMPLE.</span>
-        <p>A little better is still better.</p>
-        <span>MADE FOR YOUR EVERYDAY</span>
+        <Icon name="weight" size={18} />
+        <p>
+          One kettlebell.
+          <br />A little consistency.
+        </p>
+        <span>10 kg · mat · a little space</span>
       </footer>
     </div>
   );

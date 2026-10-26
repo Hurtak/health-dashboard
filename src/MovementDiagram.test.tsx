@@ -1,18 +1,18 @@
 import { render, screen } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { expect, test } from "vite-plus/test";
 import MovementDiagram from "./MovementDiagram";
 import type { Movement } from "./workouts";
 
 test.each<Movement>([
   "squat",
-  "hinge",
+  "march",
   "circles",
   "pushup",
   "lunge",
   "press",
   "crunch",
   "row",
-  "deadlift",
+  "bridge",
   "curl",
   "plank",
   "rest",
@@ -27,14 +27,30 @@ test.each<Movement>([
   expect(illustration.classList.contains("is-still")).toBe(true);
 });
 
-test("the side-plank guide holds a single pose while other strength movements show a controlled return", () => {
+test("one articulated figure moves continuously while the side plank stays still", () => {
   const { container, rerender } = render(<MovementDiagram movement="plank" />);
-  expect(container.querySelectorAll(".movement-frame")).toHaveLength(1);
-  expect(container.querySelector(".movement-frame")?.classList.contains("is-fixed")).toBe(true);
+  expect(container.querySelectorAll(".figure")).toHaveLength(1);
+  expect(container.querySelector("style")).toBeNull();
   rerender(<MovementDiagram movement="curl" />);
-  expect(container.querySelectorAll(".movement-frame")).toHaveLength(4);
+  expect(container.querySelectorAll(".figure")).toHaveLength(1);
+  expect(container.querySelector("style")?.textContent).toContain("@keyframes");
+  expect(container.querySelectorAll(".movement-frame")).toHaveLength(0);
   rerender(<MovementDiagram movement="circles" />);
-  expect(container.querySelectorAll(".movement-frame")).toHaveLength(3);
+  expect(container.querySelectorAll(".figure")).toHaveLength(1);
+  expect(container.querySelector("style")?.textContent).toContain("@keyframes");
+});
+
+test("pausing and resuming preserve the figure and its animation timelines", () => {
+  const { container, rerender } = render(<MovementDiagram movement="curl" />);
+  const figure = container.querySelector(".figure");
+  const timelines = [...container.querySelectorAll("style")].map((style) => style.textContent);
+  rerender(<MovementDiagram movement="curl" playing={false} />);
+  expect(container.querySelector(".figure")).toBe(figure);
+  expect(container.querySelector(".movement.is-still")).toBeTruthy();
+  expect([...container.querySelectorAll("style")].map((style) => style.textContent)).toEqual(timelines);
+  rerender(<MovementDiagram movement="curl" />);
+  expect(container.querySelector(".figure")).toBe(figure);
+  expect(container.querySelector(".is-still")).toBeNull();
 });
 
 test("right-side steps mirror the diagram and describe the active side", () => {
@@ -46,6 +62,6 @@ test("right-side steps mirror the diagram and describe the active side", () => {
 
 test("static review poses render without an animation loop", () => {
   const { container } = render(<MovementDiagram movement="press" phase={2} />);
-  expect(container.querySelectorAll(".movement-frame")).toHaveLength(1);
-  expect(container.querySelector(".is-fixed")).toBeTruthy();
+  expect(container.querySelectorAll(".figure")).toHaveLength(1);
+  expect(container.querySelector("style")).toBeNull();
 });

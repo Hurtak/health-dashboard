@@ -1,4 +1,6 @@
 export type IconName =
+  | "home"
+  | "info"
   | "arrow"
   | "clock"
   | "weight"
@@ -14,6 +16,13 @@ export type IconName =
   | "skip";
 
 const paths: Record<IconName, React.ReactNode> = {
+  home: <path d="m3 10 9-7 9 7v10h-6v-6H9v6H3z" />,
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v6m0-10v.2" />
+    </>
+  ),
   arrow: <path d="M5 12h14m-5-5 5 5-5 5" />,
   clock: (
     <>

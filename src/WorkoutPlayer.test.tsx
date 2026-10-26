@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
+import { expect, test, vi } from "vite-plus/test";
 import WorkoutPlayer from "./WorkoutPlayer";
 import { workouts } from "./workouts";
 import type { Workout } from "./workouts";
@@ -14,7 +14,10 @@ function mount(workout: Workout = workouts[0]) {
   return { ...render(<WorkoutPlayer {...props} />), props };
 }
 const click = (name: string | RegExp) => fireEvent.click(screen.getByRole("button", { name }));
-const elapse = (seconds: number) => act(() => vi.advanceTimersByTime(seconds * 1000));
+const elapse = (seconds: number) =>
+  act(() => {
+    vi.advanceTimersByTime(seconds * 1000);
+  });
 function advanceTo(name: string) {
   for (let count = 0; count < 35; count++) {
     if (screen.getByRole("heading", { level: 1 }).textContent === name) return;
@@ -44,18 +47,19 @@ test("preparation leads to warm-up, cycles the guide, and pauses while reading h
   elapse(5);
   expect(screen.getByRole("heading", { name: "Warm up" })).toBeTruthy();
   expect(screen.getByRole("timer").textContent).toBe("03:00");
-  elapse(15);
-  expect(screen.getByRole("img", { name: "hinge movement illustration" })).toBeTruthy();
+  expect(screen.getByRole("img", { name: "march movement illustration" })).toBeTruthy();
+  elapse(45);
+  expect(screen.getByRole("img", { name: "squat movement illustration" })).toBeTruthy();
   click("Guide");
   const dialog = screen.getByRole("dialog", { name: "Your warm-up" });
-  expect(within(dialog).getAllByRole("listitem")).toHaveLength(4);
+  expect(within(dialog).getAllByRole("listitem")).toHaveLength(7);
   elapse(10);
-  expect(screen.getByRole("timer").textContent).toBe("02:45");
+  expect(screen.getByRole("timer").textContent).toBe("02:15");
   fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
   expect(screen.getByRole("button", { name: "Resume workout" })).toBeTruthy();
 });
 
-test("strength sets wait for completion, alternate sides, and rest before the next round", () => {
+test("push-ups and abs go first and strength sets wait for completion before resting", () => {
   mount();
   click("Start workout");
   advanceTo("Push-ups");
@@ -63,14 +67,30 @@ test("strength sets wait for completion, alternate sides, and rest before the ne
   expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Push-ups");
   expect(screen.getByRole("timer").textContent).toBe("00:40");
   click("Set complete");
-  expect(screen.getByText(/Left leg/)).toBeTruthy();
-  click("Set complete");
-  expect(screen.getByText(/Right leg/)).toBeTruthy();
+  expect(screen.getByRole("heading", { name: "Reverse crunches" })).toBeTruthy();
   click("Set complete");
   expect(screen.getByRole("timer").textContent).toBe("01:00");
   elapse(60);
   expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Push-ups");
-  expect(screen.getByText(/ROUND 2 OF 3/)).toBeTruthy();
+  expect(screen.getByText(/Round 2 of 3/)).toBeTruthy();
+});
+
+test("the second pair uses two rounds and completes both legs and arms before resting", () => {
+  mount();
+  click("Start workout");
+  advanceTo("Kettlebell reverse lunges");
+  expect(screen.getByText(/Pair 2 · Round 1 of 2/)).toBeTruthy();
+  expect(screen.getByText(/Left leg/, { selector: ".focus-heading p" })).toBeTruthy();
+  click("Set complete");
+  expect(screen.getByText(/Right leg/, { selector: ".focus-heading p" })).toBeTruthy();
+  click("Set complete");
+  expect(screen.getByRole("heading", { name: "One-arm overhead press" })).toBeTruthy();
+  expect(screen.getByText(/Left arm/, { selector: ".focus-heading p" })).toBeTruthy();
+  click("Set complete");
+  expect(screen.getByText(/Right arm/, { selector: ".focus-heading p" })).toBeTruthy();
+  click("Set complete");
+  elapse(60);
+  expect(screen.getByText(/Pair 2 · Round 2 of 2/)).toBeTruthy();
 });
 
 test("side plank holds automatically switch from left to right and then rest", () => {
@@ -78,10 +98,10 @@ test("side plank holds automatically switch from left to right and then rest", (
   click("Start workout");
   advanceTo("Side plank");
   expect(screen.getByText(/Left side/, { selector: ".focus-heading p" })).toBeTruthy();
-  elapse(35);
+  elapse(30);
   expect(screen.getByText(/Right side/, { selector: ".focus-heading p" })).toBeTruthy();
-  expect(screen.getByRole("timer").textContent).toBe("00:35");
-  elapse(35);
+  expect(screen.getByRole("timer").textContent).toBe("00:30");
+  elapse(30);
   expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Take a breather");
 });
 
@@ -114,7 +134,8 @@ test.each(workouts)("$name finishes with the actual time and its correct set cou
   elapse(1);
   click("Pause");
   advanceTo("Well done.");
-  expect(screen.getByText(workout.id === "a" ? "18" : "21", { exact: true })).toBeTruthy();
+  expect(screen.getByText(workout.id === "a" ? "14" : "20", { exact: true })).toBeTruthy();
+  expect(screen.getByText("3 + 2", { exact: true })).toBeTruthy();
   expect(screen.getByText("00:01", { exact: true })).toBeTruthy();
   click("Continue");
   expect(props.onBack).toHaveBeenCalledOnce();

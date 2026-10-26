@@ -1,18 +1,18 @@
-import { expect, test } from "vitest";
-import { anatomy, distance, ground, poseFor } from "./movementPoses";
+import { expect, test } from "vite-plus/test";
+import { anatomy, distance, ground, motionPosesFor, poseFor } from "./movementPoses";
 import type { Limb, Phase, Point } from "./movementPoses";
 import type { Movement } from "./workouts";
 
 const movements: Exclude<Movement, "rest">[] = [
   "squat",
-  "hinge",
+  "march",
   "circles",
   "pushup",
   "lunge",
   "press",
   "crunch",
   "row",
-  "deadlift",
+  "bridge",
   "curl",
   "plank",
 ];
@@ -26,8 +26,7 @@ function parallel(a: Point, b: Point, c: Point, d: Point) {
 }
 
 test.each(movements)("%s keeps the same adult proportions in every pose", (movement) => {
-  for (const phase of phases) {
-    const pose = poseFor(movement, phase);
+  for (const pose of motionPosesFor(movement)) {
     for (const limb of pose.arms) {
       expect(distance(limb[0], limb[1])).toBeCloseTo(anatomy.upperArm, 8);
       expect(distance(limb[1], limb[2])).toBeCloseTo(anatomy.forearm, 8);
@@ -48,6 +47,40 @@ test.each(movements)("%s keeps the same adult proportions in every pose", (movem
       expect(point[1]).toBeLessThanOrEqual(ground);
     }
     if (pose.bell) expect(pose.bell.grip[1] + 23).toBeLessThan(ground);
+  }
+});
+
+test.each(movements)("%s has a closed, continuous cycle with no jumps between samples", (movement) => {
+  const poses = motionPosesFor(movement);
+  expect(poses.at(-1)).toEqual(poses[0]);
+  for (let index = 1; index < poses.length; index++) {
+    const before = poses[index - 1];
+    const after = poses[index];
+    const previousPoints = [before.head, ...before.spine, ...before.arms.flat(), ...before.legs.flat(), ...before.toes];
+    const nextPoints = [after.head, ...after.spine, ...after.arms.flat(), ...after.legs.flat(), ...after.toes];
+    expect(
+      Math.max(...nextPoints.map((point, pointIndex) => distance(point, previousPoints[pointIndex]))),
+    ).toBeLessThan(12);
+  }
+});
+
+test("floor and bench supports remain planted throughout the continuous motion", () => {
+  for (const movement of ["pushup", "lunge", "row", "bridge", "squat"] as const) {
+    const poses = motionPosesFor(movement);
+    const start = poses[0];
+    for (const pose of poses) {
+      if (movement === "pushup") {
+        expect(pose.toes).toEqual(start.toes);
+        expect(pose.arms.map((arm) => arm[2])).toEqual(start.arms.map((arm) => arm[2]));
+      }
+      if (movement === "squat" || movement === "row") expect(pose.toes).toEqual(start.toes);
+      if (movement === "lunge" || movement === "bridge") expect(pose.toes[1]).toEqual(start.toes[1]);
+      if (movement === "row") expect(pose.arms[0][2]).toEqual(start.arms[0][2]);
+      if (movement === "bridge") {
+        expect(pose.head).toEqual(start.head);
+        expect(pose.spine[0]).toEqual(start.spine[0]);
+      }
+    }
   }
 });
 
@@ -80,20 +113,40 @@ test("reverse lunges return to standing while the working foot stays planted", (
     expect(distance(hand, bottom.bell!.grip)).toBeLessThanOrEqual(5);
 });
 
-test.each(["hinge", "deadlift"] as const)("%s moves the hips back with a neutral spine and soft knees", (movement) => {
-  const start = poseFor(movement, 0);
-  const bottom = poseFor(movement, 2);
-  expect(bottom.spine[2][0]).toBeGreaterThan(start.spine[2][0] + 12);
+test("marching alternates the raised knee while the other foot supports an upright torso", () => {
+  const standing = poseFor("march", 1);
   for (const phase of phases) {
-    const pose = poseFor(movement, phase);
-    expect(pose.toes).toEqual(start.toes);
+    const pose = poseFor("march", phase);
+    expect(pose.spine).toEqual(standing.spine);
+    expect(pose.spine[0][0]).toBeCloseTo(pose.spine[2][0], 8);
+  }
+  const leftUp = poseFor("march", 0);
+  const rightUp = poseFor("march", 2);
+  expect(leftUp.toes[1]).toEqual(standing.toes[1]);
+  expect(rightUp.toes[0]).toEqual(standing.toes[0]);
+  expect(leftUp.legs[0][1][1]).toBeLessThan(standing.legs[0][1][1] - 35);
+  expect(rightUp.legs[1][1][1]).toBeLessThan(standing.legs[1][1][1] - 35);
+  expect(leftUp.arms[1][2][0]).toBeLessThan(rightUp.arms[1][2][0]);
+  expect(rightUp.arms[0][2][0]).toBeLessThan(leftUp.arms[0][2][0]);
+});
+
+test("single-leg bridges lift the pelvis without moving the head, shoulders or working foot", () => {
+  const start = poseFor("bridge", 0);
+  const top = poseFor("bridge", 2);
+  for (const phase of phases) {
+    const pose = poseFor("bridge", phase);
+    expect(pose.support).toBe("mat");
+    expect(pose.head).toEqual(start.head);
+    expect(pose.spine[0]).toEqual(start.spine[0]);
+    expect(pose.arms).toEqual(start.arms);
+    expect(pose.legs[1][2]).toEqual(start.legs[1][2]);
+    expect(pose.toes[1]).toEqual(start.toes[1]);
+    expect(pose.toes[0][1]).toBeLessThan(ground - 40);
     expect(parallel(pose.spine[0], pose.spine[1], pose.spine[1], pose.spine[2])).toBeCloseTo(0, 8);
-    for (const limb of pose.legs) expect(angle(limb)).toBeGreaterThan(140);
   }
-  if (bottom.bell) {
-    expect(bottom.bell.grip[0]).toBeCloseTo(bottom.spine[0][0], 8);
-    expect(Math.abs(bottom.bell.grip[0] - bottom.legs[1][1][0])).toBeLessThan(18);
-  }
+  expect(top.spine[2][1]).toBeLessThan(start.spine[2][1] - 14);
+  expect(parallel(top.spine[0], top.spine[2], top.legs[1][0], top.legs[1][1])).toBeCloseTo(0, 8);
+  expect(top.legs[1][1][0]).toBeCloseTo(top.legs[1][2][0], 8);
 });
 
 test("the curl keeps its elbow and torso fixed instead of swinging the weight", () => {

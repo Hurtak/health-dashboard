@@ -17,11 +17,11 @@
 .figure path {
   fill: none;
 }
-.figure-leg > polyline {
+.figure-leg .limb-segment {
   stroke: #30483e;
   stroke-width: 8.5;
 }
-.figure-arm > polyline {
+.figure-arm .limb-segment {
   stroke: #cd9c7c;
   stroke-width: 7;
 }
@@ -48,6 +48,9 @@
   stroke: #527663;
   stroke-width: 20;
   stroke-linecap: butt;
+}
+.figure-waist {
+  fill: #527663;
 }
 .figure .figure-shorts {
   stroke: #30483e;
@@ -116,49 +119,16 @@
   stroke-width: 2;
 }
 
-/* Three distinct poses, with the middle pose repeated on the controlled return. */
-.movement-frame {
-  opacity: 0;
-  animation: pose-cycle 4.8s steps(1, end) infinite;
-  animation-delay: calc(var(--frame) * 1.2s);
+.movement-part {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  animation: var(--motion-name, none) var(--movement-duration, 4.8s) linear infinite;
 }
-@keyframes pose-cycle {
-  0%,
-  24.99% {
-    opacity: 1;
-  }
-  25%,
-  100% {
-    opacity: 0;
-  }
-}
-.movement--circles .movement-frame {
-  animation-name: circle-cycle;
-  animation-delay: calc(var(--frame) * 1.6s);
-}
-@keyframes circle-cycle {
-  0%,
-  33.32% {
-    opacity: 1;
-  }
-  33.33%,
-  100% {
-    opacity: 0;
-  }
-}
-.is-still .movement-frame {
+.is-still .movement-part {
   animation-play-state: paused;
 }
-.movement-frame.is-fixed {
-  opacity: 1;
-  animation: none;
-}
 @media (prefers-reduced-motion: reduce) {
-  .movement-frame {
+  .movement-part {
     animation: none;
-    opacity: 0;
-  }
-  .movement-frame.frame-0 {
-    opacity: 1;
   }
 }

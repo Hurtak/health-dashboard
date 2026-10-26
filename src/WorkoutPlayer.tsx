@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import MovementDiagram from "./MovementDiagram";
 import Icon from "./Icon";
 import InfoDialog from "./InfoDialog";
-import { buildSteps, warmup } from "./workouts";
+import { buildSteps, pairRounds, warmupAt, warmupFor, workoutMinutes } from "./workouts";
 import type { Exercise, Workout } from "./workouts";
 import { formatTime } from "./timer";
 import { useWorkoutTimer } from "./useWorkoutTimer";
@@ -17,6 +17,7 @@ type Info = "plan" | "warmup" | "form" | "restart" | Exercise;
 
 export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange }: Props) {
   const steps = useMemo(() => buildSteps(workout), [workout]);
+  const warmup = useMemo(() => warmupFor(workout), [workout]);
   const timer = useWorkoutTimer(steps);
   const { state, step, remaining, pause } = timer;
   const [info, setInfo] = useState<Info | null>(null);
@@ -26,7 +27,7 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
   const active = !ready && !complete;
   const isWarmup = step?.kind === "warmup";
   const isRest = step?.kind === "rest";
-  const warmupExercise = warmup[Math.floor(state.elapsed / 15) % warmup.length];
+  const warmupExercise = warmupAt(warmup, state.elapsed);
   const illustration = isWarmup
     ? warmupExercise.movement
     : (step?.exercise?.movement ?? (isRest ? "rest" : workout.exercises[0].movement));
@@ -91,12 +92,15 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
         </>
       ) : info === "warmup" ? (
         <>
-          <p>Continuously cycle through these movements for three minutes:</p>
+          <p>
+            Follow these movements for three minutes. Finish with a few easy repetitions of today's exercises, covering
+            both sides as needed.
+          </p>
           <ul className="warmup-checklist">
             {warmup.map((exercise) => (
               <li key={exercise.name}>
                 <span>{exercise.name}</span>
-                <strong>{exercise.reps}</strong>
+                <strong>{exercise.seconds} sec</strong>
               </li>
             ))}
           </ul>
@@ -110,18 +114,22 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
         <>
           <p>{workout.description}</p>
           <p>
-            Do the two exercises in each pair back-to-back, rest for 60 seconds, and repeat for three rounds. Complete
-            all three rounds of Pair 1 before starting Pair 2.
+            Complete both exercises in Pair 1 for three rounds, then both exercises in Pair 2 for two rounds. Do both
+            sides of a one-sided exercise before moving on. Rest for 60 seconds after each round except the final one.
           </p>
           <p>
-            Finish each set with 1–2 clean reps left. Your first week calls for two rounds; this timer follows the
-            regular three-round routine.
+            Finish most repetition sets with 1–3 clean reps left. End planks before your hips sag or rotate. If starting
+            fresh, use two rounds of both pairs in week one; this fixed timer follows the regular three / two routine.
           </p>
           <p>
             Strength sets use a stopwatch: finish the reps, then tap Set complete. Warm-up, rests, and plank holds count
             down automatically.
           </p>
           <p>Keep this tab open and your device awake for countdown sounds.</p>
+          <p>
+            Stop at 25 minutes rather than rushing. Take an extra recovery day if soreness affects technique or
+            performance. On climbing days, skip curls and rows; do bridges and planks only if comfortable.
+          </p>
         </>
       ) : (
         <>
@@ -137,19 +145,23 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
     return (
       <div className="workout-preview">
         <header className="preview-heading">
-          <span className={`preview-art ${workout.id}`}>
-            <MovementDiagram movement={workout.exercises[0].movement} />
-          </span>
           <div>
-            <span className="eyebrow">WORKOUT {workout.number}</span>
+            <span className="session-context">Workout {workout.label}</span>
             <h1>
               {workout.name}
               <span className="period">.</span>
             </h1>
-            <p>4 exercises · 20–23 minutes</p>
+            <p>4 exercises · {workoutMinutes} minutes</p>
           </div>
+          <button className="text-button preview-help" onClick={() => showInfo("plan")} aria-label="Workout notes">
+            <span>Workout notes</span>
+            <Icon name="info" size={18} />
+          </button>
         </header>
         <p className="page-description">{workout.description}</p>
+        <div className="preview-art">
+          <MovementDiagram movement={workout.exercises[0].movement} phase={0} />
+        </div>
         <button className="primary-button preview-start" onClick={timer.start}>
           <Icon name="play" size={21} />
           Start workout
@@ -159,7 +171,7 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
             <Icon name="weight" />
             10 kg kettlebell + mat
           </span>
-          <span>3 rounds per pair</span>
+          <span>{pairRounds.join(" + ")} rounds</span>
           <span>60 sec rests</span>
         </div>
         <section className="preview-exercises" aria-label="Workout exercises">
@@ -170,32 +182,26 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
             </span>
             <span>
               <strong>A little warm-up</strong>
-              <small>3 minutes · four easy moves</small>
+              <small>3 minutes · prepare for today</small>
             </span>
             <Icon name="arrow" size={17} />
           </button>
-          {[0, 1].map((block) => (
+          {pairRounds.map((rounds, block) => (
             <div className="preview-pair" key={block}>
               <p className="pair-label">
-                PAIR {block + 1}
-                <span>Back-to-back · 3 rounds</span>
+                Pair {block + 1}
+                <span>Back-to-back · {rounds} rounds</span>
               </p>
               {workout.exercises.slice(block * 2, block * 2 + 2).map((exercise) => (
                 <button className="preview-exercise" key={exercise.name} onClick={() => showInfo(exercise)}>
                   <span className="exercise-thumbnail">
-                    <MovementDiagram movement={exercise.movement} />
+                    <MovementDiagram movement={exercise.movement} phase={0} />
                   </span>
                   <span>
                     <strong>{exercise.name}</strong>
                     <small>
                       {exercise.reps}
-                      {exercise.sides
-                        ? exercise.movement === "lunge"
-                          ? " per leg"
-                          : exercise.movement === "plank"
-                            ? " per side"
-                            : " per arm"
-                        : ""}
+                      {exercise.sides ? ` per ${exercise.sides}` : ""}
                     </small>
                   </span>
                   <Icon name="arrow" size={17} />
@@ -204,10 +210,6 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
             </div>
           ))}
         </section>
-        <button className="text-button preview-help" onClick={() => showInfo("plan")}>
-          Workout notes
-          <Icon name="arrow" size={17} />
-        </button>
         {dialog}
       </div>
     );
@@ -218,7 +220,7 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
         <button className="icon-button" onClick={onBack} aria-label="Back to overview">
           <Icon name="back" size={22} />
         </button>
-        <span className="eyebrow">DAILY / WORKOUT {workout.number}</span>
+        <span className="session-context">Daily / Workout {workout.label}</span>
         <button
           className="icon-button"
           onClick={timer.toggleSound}
@@ -231,7 +233,7 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
       {complete ? (
         <div className="session-complete">
           <header>
-            <span className="eyebrow">ANOTHER GOOD DAY IN THE BOOKS</span>
+            <span className="session-context">Session complete</span>
             <h1>
               Well done<span className="period">.</span>
             </h1>
@@ -239,24 +241,10 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
           </header>
           <div className="celebration-art">
             <svg viewBox="0 0 300 240" aria-hidden="true">
-              {Array.from({ length: 16 }, (_, index) => {
-                const angle = (index * Math.PI) / 8;
-                const x = 150 + Math.cos(angle) * (index % 2 ? 115 : 95);
-                const y = 120 + Math.sin(angle) * (index % 2 ? 100 : 85);
-                return (
-                  <path
-                    key={index}
-                    d={`M${x} ${y}l${Math.cos(angle + 1) * 9} ${Math.sin(angle + 1) * 9}`}
-                    stroke={["#839b61", "#c49b75", "#b4bf8e"][index % 3]}
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                  />
-                );
-              })}
-              <circle cx="150" cy="120" r="62" fill="#e5edcf" />
+              <circle cx="150" cy="120" r="62" fill="var(--surface)" />
               <path
                 d="m126 119 16 16 33-35"
-                stroke="#77934e"
+                stroke="var(--accent)"
                 strokeWidth="6"
                 fill="none"
                 strokeLinecap="round"
@@ -266,8 +254,8 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
           </div>
           <dl className="completion-stats">
             <div>
-              <dt>Rounds per pair</dt>
-              <dd>3</dd>
+              <dt>Pair 1 + Pair 2</dt>
+              <dd>{pairRounds.join(" + ")}</dd>
             </div>
             <div>
               <dt>Time</dt>
@@ -296,23 +284,21 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
             <header className="focus-heading" aria-live="polite">
               <span>
                 {paused
-                  ? "PAUSED · TAKE YOUR TIME"
+                  ? "Paused · take your time"
                   : step.kind === "prepare"
-                    ? "FIND YOUR SPACE"
+                    ? "Find your space"
                     : isWarmup
-                      ? "A LITTLE WARM-UP"
+                      ? "A little warm-up"
                       : isRest
-                        ? `PAIR ${step.block} · ROUND ${step.round} COMPLETE`
-                        : `${completedSets + 1} OF ${totalSets} · ROUND ${step.round} OF 3`}
+                        ? `Pair ${step.block} · round ${step.round} complete`
+                        : `Pair ${step.block} · Round ${step.round} of ${step.rounds}`}
               </span>
               <h1>{step.name}</h1>
               <p>
-                {step.side
-                  ? `${step.side} ${step.exercise?.movement === "lunge" ? "leg" : step.exercise?.movement === "plank" ? "side" : "arm"} · `
-                  : ""}
-                {step.exercise?.reps ??
+                {step.side ? `${step.side} ${step.exercise?.sides} · ` : ""}
+                {(step.exercise?.seconds ? `${step.exercise.seconds} sec` : step.exercise?.reps) ??
                   (isWarmup
-                    ? "Cycle through all four movements"
+                    ? "March, squat, circle, then easy reps"
                     : isRest
                       ? "Breathe. Relax your shoulders."
                       : "We’ll start with a 3-minute warm-up")}
@@ -338,7 +324,7 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
               <strong role="timer" aria-label={remaining === undefined ? "Set elapsed time" : "Time remaining"}>
                 {formatTime(remaining ?? state.elapsed)}
               </strong>
-              <span>{remaining === undefined ? "SET ELAPSED · GO AT YOUR PACE" : paused ? "PAUSED" : "REMAINING"}</span>
+              <span>{remaining === undefined ? "Set elapsed · go at your pace" : paused ? "Paused" : "Remaining"}</span>
             </div>
             <p className="focus-cue">
               {isWarmup
@@ -372,7 +358,7 @@ export default function WorkoutPlayer({ workout, visible, onBack, onFocusChange 
               </button>
             </div>
             <p className="focus-next">
-              UP NEXT{" "}
+              Up next{" "}
               <strong>
                 {next
                   ? `${next.name}${next.side ? ` · ${next.side.toLowerCase()}` : ""}`

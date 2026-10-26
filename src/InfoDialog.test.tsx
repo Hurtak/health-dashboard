@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
+import { expect, test, vi } from "vite-plus/test";
 import InfoDialog from "./InfoDialog";
 
 test("labels the native modal and handles close and Escape", () => {

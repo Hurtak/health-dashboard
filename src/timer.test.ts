@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "vite-plus/test";
 import { advanceTimer, formatTime, initialTimer, remainingSeconds, tickTimer } from "./timer";
 import { buildSteps, workouts } from "./workouts";
 import type { TimerState } from "./timer";
@@ -14,13 +14,19 @@ test.each(workouts)("$name preserves pairs, rounds, both sides, and rests", (wor
   const plan = buildSteps(workout);
   expect(plan[0].seconds).toBe(5);
   expect(plan[1].seconds).toBe(180);
-  expect(plan.filter((step) => step.kind === "rest")).toHaveLength(5);
-  for (const exercise of workout.exercises) {
+  expect(plan.filter((step) => step.kind === "rest")).toHaveLength(4);
+  expect(plan.filter((step) => step.kind === "rest").every((step) => step.seconds === 60)).toBe(true);
+  for (const [index, exercise] of workout.exercises.entries()) {
+    const rounds = index < 2 ? 3 : 2;
     const sets = plan.filter((step) => step.exercise === exercise);
-    expect(sets).toHaveLength(exercise.sides ? 6 : 3);
+    expect(sets).toHaveLength(rounds * (exercise.sides ? 2 : 1));
+    expect(sets.every((step) => step.rounds === rounds)).toBe(true);
     if (exercise.sides) {
-      expect(sets.filter((step) => step.side === "Left")).toHaveLength(3);
-      expect(sets.filter((step) => step.side === "Right")).toHaveLength(3);
+      expect(sets.filter((step) => step.side === "Left")).toHaveLength(rounds);
+      expect(sets.filter((step) => step.side === "Right")).toHaveLength(rounds);
+      for (const step of sets.filter((step) => step.side === "Left")) {
+        expect(plan[plan.indexOf(step) + 1]).toMatchObject({ exercise, side: "Right", round: step.round });
+      }
     }
   }
   expect(plan.at(-1)?.exercise).toBe(workout.exercises[3]);
@@ -49,21 +55,23 @@ test("completing a rep set resets its clock and preserves session time", () => {
   const inSet = { ...running, index: 2, elapsed: 20, totalElapsed: 205 };
   const next = advanceTimer(inSet, steps, 2000);
   expect(next.index).toBe(3);
-  expect(steps[next.index].side).toBe("Left");
+  expect(steps[next.index].name).toBe("Reverse crunches");
   expect(next.elapsed).toBe(0);
   expect(next.totalElapsed).toBe(206);
 });
 
-test("side plank changes sides and completes the final hold automatically", () => {
+test("side plank changes sides automatically and rests before the next curl round", () => {
   const plan = buildSteps(workouts[1]);
-  const state = { ...running, index: plan.length - 2 };
-  const right = tickTimer(state, plan, 37_000);
+  const state = { ...running, index: plan.findIndex((step) => step.exercise?.movement === "plank") };
+  const right = tickTimer(state, plan, 32_000);
   expect(plan[right.index].side).toBe("Right");
   expect(right.elapsed).toBe(1);
-  const done = tickTimer(right, plan, 75_000);
-  expect(done.status).toBe("complete");
-  expect(done.index).toBe(plan.length);
-  expect(done.totalElapsed).toBe(70);
+  const rest = tickTimer(right, plan, 63_000);
+  expect(plan[rest.index].kind).toBe("rest");
+  expect(rest.status).toBe("running");
+  expect(rest.elapsed).toBe(2);
+  const curls = tickTimer(rest, plan, 121_000);
+  expect(plan[curls.index]).toMatchObject({ name: "Kettlebell biceps curl", round: 2, side: "Left" });
 });
 
 test("manual completion works while paused and finishes without another rest", () => {

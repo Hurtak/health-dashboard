@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { expect, test } from "vite-plus/test";
 import Food from "./Food";
 
 test("shows the fixed target, four meals, and daily protein total", () => {

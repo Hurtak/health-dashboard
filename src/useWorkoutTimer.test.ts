@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
+import { expect, test, vi } from "vite-plus/test";
 import { useWorkoutTimer } from "./useWorkoutTimer";
 import { buildSteps, workouts } from "./workouts";
 import { audioMock } from "./test/setup";
@@ -9,10 +9,15 @@ const steps = buildSteps(workouts[0]);
 test("plays exactly one beep on each of the final three seconds and a different transition tone", () => {
   const { result } = renderHook(() => useWorkoutTimer(steps));
   act(() => result.current.start());
-  act(() => vi.advanceTimersByTime(2000));
+  act(() => {
+    vi.advanceTimersByTime(2000);
+  });
   expect(result.current.remaining).toBe(3);
   expect(audioMock.tones).toEqual([560]);
-  for (let second = 0; second < 3; second++) act(() => vi.advanceTimersByTime(1000));
+  for (let second = 0; second < 3; second++)
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
   expect(audioMock.tones).toEqual([560, 560, 560, 880]);
   expect(result.current.step.kind).toBe("warmup");
   expect(result.current.remaining).toBe(180);
@@ -22,23 +27,33 @@ test("mute suppresses cues and unmute does not repeat a cue", () => {
   const { result } = renderHook(() => useWorkoutTimer(steps));
   act(() => result.current.start());
   act(() => result.current.toggleSound());
-  act(() => vi.advanceTimersByTime(2000));
+  act(() => {
+    vi.advanceTimersByTime(2000);
+  });
   expect(audioMock.tones).toEqual([]);
   act(() => result.current.toggleSound());
   expect(audioMock.tones).toEqual([]);
-  act(() => vi.advanceTimersByTime(1000));
+  act(() => {
+    vi.advanceTimersByTime(1000);
+  });
   expect(audioMock.tones).toEqual([560]);
 });
 
 test("pause excludes time, resume continues, and reset returns to an idle timer", () => {
   const { result } = renderHook(() => useWorkoutTimer(steps));
   act(() => result.current.start());
-  act(() => vi.advanceTimersByTime(1000));
+  act(() => {
+    vi.advanceTimersByTime(1000);
+  });
   act(() => result.current.pause());
-  act(() => vi.advanceTimersByTime(10000));
+  act(() => {
+    vi.advanceTimersByTime(10000);
+  });
   expect(result.current.remaining).toBe(4);
   act(() => result.current.start());
-  act(() => vi.advanceTimersByTime(1000));
+  act(() => {
+    vi.advanceTimersByTime(1000);
+  });
   expect(result.current.state.totalElapsed).toBeCloseTo(2);
   act(() => result.current.reset());
   expect(result.current.state.status).toBe("ready");
@@ -57,7 +72,9 @@ test("audio failures do not prevent the timer from running", async () => {
   const { result } = renderHook(() => useWorkoutTimer(steps));
   act(() => result.current.start());
   expect(result.current.audioUnavailable).toBe(true);
-  act(() => vi.advanceTimersByTime(1000));
+  act(() => {
+    vi.advanceTimersByTime(1000);
+  });
   expect(result.current.remaining).toBe(4);
 });
 
@@ -103,7 +120,9 @@ test("denied wake-lock access leaves the timer usable", async () => {
   });
   const { result, unmount } = renderHook(() => useWorkoutTimer(steps));
   await act(async () => result.current.start());
-  act(() => vi.advanceTimersByTime(1000));
+  act(() => {
+    vi.advanceTimersByTime(1000);
+  });
   expect(result.current.remaining).toBe(4);
   unmount();
   Reflect.deleteProperty(navigator, "wakeLock");
